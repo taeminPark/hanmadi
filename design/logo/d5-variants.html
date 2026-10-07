@@ -1,0 +1,155 @@
+<title>한마디 D5 이름도장 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gaegu:wght@700&family=Gowun+Batang:wght@700&family=Gowun+Dodum&family=Hahmlet:wght@600&family=IBM+Plex+Sans+KR:wght@400;600;700&family=Jua&family=Nanum+Brush+Script&family=Nanum+Myeongjo:wght@800&family=Song+Myung&family=Yeon+Sung&family=Diphylleia&display=swap" rel="stylesheet">
+<style>
+/* 같은 세로 이름도장 틀에 글꼴만 바꿔 12장, 색과 스타일은 위 막대에서 한 번에 */
+:root {
+  --page: #F3F1EE; --panel: #FFFFFF; --text: #2B2622; --muted: #6E665F; --rule: #E2DDD6;
+  --c: #6B4630;
+  --ui: 'IBM Plex Sans KR', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page:#1A1715; --panel:#24201D; --text:#EFE8E1; --muted:#A79D93; --rule:#3A332E; color-scheme: dark; } }
+:root[data-theme="dark"] { --page:#1A1715; --panel:#24201D; --text:#EFE8E1; --muted:#A79D93; --rule:#3A332E; color-scheme: dark; }
+body { background: var(--page); color: var(--text); font-family: var(--ui); font-size: 15px; line-height: 1.6; word-break: keep-all; }
+.wrap { max-width: 1140px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; }
+h1 { font-size: clamp(24px, 4.6vw, 32px); margin: 0 0 6px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 18px; max-width: 64ch; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; padding: 10px 0 12px; display: grid; gap: 8px;
+  background: color-mix(in srgb, var(--page) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule); }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.row > span { font-size: 13px; color: var(--muted); width: 3.5em; }
+.opt { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 8px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--panel); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.opt.plain { padding: 0 14px; }
+.opt i { width: 20px; height: 20px; border-radius: 50%; background: var(--sw); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.opt[aria-pressed="true"] { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.opt:focus-visible { outline: 3px solid var(--muted); outline-offset: 2px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-top: 18px; }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card header { display: flex; align-items: baseline; gap: 8px; }
+.num { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card h2 { font-size: 16px; margin: 0; }
+.stage { border-radius: 12px; display: grid; place-items: center; padding: 14px 0; background: var(--bgc); }
+.stage svg { width: 150px; height: 150px; }
+.icons { display: flex; align-items: flex-end; gap: 12px; }
+.icons > div { display: grid; justify-items: center; gap: 4px; }
+.icons small { color: var(--muted); font-size: 11px; }
+.tile { width: 60px; height: 60px; border-radius: 14px; display: grid; place-items: center; background: var(--tb); box-shadow: 0 2px 6px rgba(0,0,0,.16); }
+.tile svg { width: 86%; height: 86%; }
+.tile.s32 { width: 32px; height: 32px; border-radius: 8px; }
+.vibe { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* 색 역할: --fg 도장 색, --bg 도장 안쪽(백문일 때 글자색) */
+.stage, .tile.light { --tb: var(--bgc); --fg: var(--c); --bg: var(--bgc); }
+.tile.filled { --tb: var(--c); --fg: #FFFFFF; --bg: var(--c); }
+.wrap { --bgc: #F6F1EA; }
+
+.ask { margin-top: 28px; padding: 16px 18px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); }
+.ask p { margin: 0 0 6px; } .ask p:last-child { margin: 0; color: var(--muted); font-size: 14px; }
+</style>
+
+<div class="wrap">
+  <h1>한마디 D5 이름도장 시안</h1>
+  <p class="lead">세로 이름도장 틀에 글꼴 12가지를 넣었어요. 위 막대에서 색과 새김 방식을 바꾸면 모든 시안에 한꺼번에 적용돼요.</p>
+
+  <div class="bar">
+    <div class="row" id="colors"><span>색</span></div>
+    <div class="row" id="styles"><span>새김</span></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="ask">
+    <p>번호, 색, 새김 방식으로 답해 주세요. 예: "4번, 에스프레소, 테두리"</p>
+    <p>시안은 웹폰트 글자로 그렸어요. 고르시면 글자를 도형으로 바꿔서 폰트 없이도 똑같이 보이는 아이콘 파일로 마무리할게요. 글꼴은 모두 무료 상업 이용이 가능한 구글 폰트예요.</p>
+  </div>
+</div>
+
+<script>
+const COLORS = [
+  { id: 'espresso', name: '에스프레소', hex: '#6B4630' },
+  { id: 'caramel', name: '카라멜', hex: '#B8743F' },
+  { id: 'sage', name: '세이지', hex: '#5F7A5C' },
+  { id: 'amber', name: '호박', hex: '#C98A3E' },
+  { id: 'injoo', name: '인주', hex: '#C8382C' },
+  { id: 'namsaek', name: '남색', hex: '#22335C' },
+  { id: 'bichwi', name: '비취', hex: '#1F6E68' },
+  { id: 'jaju', name: '자주', hex: '#7A2E5A' },
+  { id: 'meok', name: '먹', hex: '#2A2D34' },
+];
+const STYLES = [
+  { id: 'line', name: '테두리', note: '주문' },
+  { id: 'fill', name: '채움', note: '백문' },
+  { id: 'double', name: '이중 테두리' },
+  { id: 'round', name: '둥근 틀' },
+];
+const FONTS = [
+  { family: "'Gowun Batang'", weight: 700, name: '고운바탕', vibe: '처음 보신 D5 그대로. 단정한 명조.' },
+  { family: "'Song Myung'", weight: 400, name: '송명', vibe: '붓 맛이 살아 있는 옛 명조. 가장 도장다워요.' },
+  { family: "'Nanum Myeongjo'", weight: 800, name: '나눔명조 굵게', vibe: '획이 굵고 반듯해서 작게 봐도 또렷해요.' },
+  { family: "'Hahmlet'", weight: 600, name: '함렛', vibe: '현대적인 명조. 차분하고 세련됐어요.' },
+  { family: "'Diphylleia'", weight: 400, name: '디필레이아', vibe: '가늘고 우아한 명조. 감성적이에요.' },
+  { family: "'Yeon Sung'", weight: 400, name: '연성', vibe: '손으로 새긴 듯한 글씨. 수제 도장 느낌.' },
+  { family: "'Nanum Brush Script'", weight: 400, name: '나눔 붓', vibe: '붓으로 쓴 듯 자유로워요. 캘리그래피 느낌.' },
+  { family: "'Gowun Dodum'", weight: 400, name: '고운돋움', vibe: '둥근 고딕. 카페 메뉴판처럼 부드러워요.' },
+  { family: "'Jua'", weight: 400, name: '주아', vibe: '통통하고 귀여워요. 가장 친근해요.' },
+  { family: "'Gaegu'", weight: 700, name: '개구', vibe: '손글씨 메모 느낌. 쪽지에 적은 한마디.' },
+  { family: "'Do Hyeon'", weight: 400, name: '도현', vibe: '반듯한 고딕. 간판처럼 깔끔해요.' },
+  { family: "'Black Han Sans'", weight: 400, name: '검은고딕', vibe: '가장 굵고 힘 있어요. 작은 크기에 강해요.' },
+];
+
+function frame(style) {
+  if (style === 'fill') return `<rect x="70" y="12" width="116" height="232" rx="18" style="fill:var(--fg)"/>`;
+  if (style === 'double') return `<rect x="70" y="12" width="116" height="232" rx="10" fill="none" style="stroke:var(--fg)" stroke-width="10"/>
+    <rect x="84" y="26" width="88" height="204" rx="4" fill="none" style="stroke:var(--fg)" stroke-width="3"/>`;
+  if (style === 'round') return `<rect x="70" y="12" width="116" height="232" rx="58" fill="none" style="stroke:var(--fg)" stroke-width="11"/>`;
+  return `<rect x="72" y="14" width="112" height="228" rx="16" fill="none" style="stroke:var(--fg)" stroke-width="11"/>`;
+}
+function mark(f, style) {
+  const ink = style === 'fill' ? 'var(--bg)' : 'var(--fg)';
+  const size = style === 'double' || style === 'round' ? 56 : 62;
+  const ys = style === 'round' ? [72, 128, 184] : [68, 128, 188];
+  const glyphs = ['한', '마', '디'].map((ch, i) =>
+    `<text x="128" y="${ys[i]}" text-anchor="middle" dominant-baseline="central" font-family="${f.family}, serif" font-weight="${f.weight}" font-size="${size}" style="fill:${ink}">${ch}</text>`).join('');
+  return `<svg viewBox="0 0 256 256" aria-hidden="true">${frame(style)}${glyphs}</svg>`;
+}
+
+const state = { color: 'espresso', style: 'line' };
+try { Object.assign(state, JSON.parse(localStorage.getItem('hanmadi-d5') || '{}')); } catch {}
+
+function render() {
+  const col = COLORS.find(c => c.id === state.color) || COLORS[0];
+  document.documentElement.style.setProperty('--c', col.hex);
+  document.querySelectorAll('[data-color]').forEach(b => b.setAttribute('aria-pressed', b.dataset.color === state.color));
+  document.querySelectorAll('[data-style]').forEach(b => b.setAttribute('aria-pressed', b.dataset.style === state.style));
+  document.getElementById('grid').innerHTML = FONTS.map((f, i) => {
+    const m = mark(f, state.style);
+    return `<article class="card">
+      <header><span class="num">${i + 1}</span><h2>${f.name}</h2></header>
+      <div class="stage">${m}</div>
+      <div class="icons">
+        <div><div class="tile light">${m}</div><small>밝은 바탕</small></div>
+        <div><div class="tile filled">${m}</div><small>색 바탕</small></div>
+        <div><div class="tile s32 light">${m}</div><small>32px</small></div>
+      </div>
+      <p class="vibe">${f.vibe}</p>
+    </article>`;
+  }).join('');
+  try { localStorage.setItem('hanmadi-d5', JSON.stringify(state)); } catch {}
+}
+
+document.getElementById('colors').insertAdjacentHTML('beforeend', COLORS.map(c =>
+  `<button class="opt" data-color="${c.id}" style="--sw:${c.hex}" aria-pressed="false"><i></i>${c.name}</button>`).join(''));
+document.getElementById('styles').insertAdjacentHTML('beforeend', STYLES.map(s =>
+  `<button class="opt plain" data-style="${s.id}" aria-pressed="false">${s.name}</button>`).join(''));
+document.querySelector('.bar').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.color) state.color = b.dataset.color;
+  if (b.dataset.style) state.style = b.dataset.style;
+  render();
+});
+render();
+</script>

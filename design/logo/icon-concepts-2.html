@@ -1,0 +1,171 @@
+<title>한마디 아이콘 시안 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Batang:wght@700&family=Song+Myung&family=Yeon+Sung&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* 시안 9개를 같은 틀(큰 마크, 홈 아이콘 두 가지, 작은 크기, 앱 상단)에 놓고 색은 위에서 한 번에 바꾼다 */
+:root {
+  --paper: #EEF1F5; --sheet: #FFFFFF; --ink: #1A2540; --ink-2: #5B6478; --line: #D7DCE4;
+  --c: #C8382C;
+  --serif: 'Gowun Batang', 'AppleMyungjo', serif;
+  --sans: 'Noto Sans KR', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper:#131A26; --sheet:#1C2433; --ink:#E9EDF4; --ink-2:#A3ACBD; --line:#2C3548; color-scheme: dark; } }
+:root[data-theme="dark"] { --paper:#131A26; --sheet:#1C2433; --ink:#E9EDF4; --ink-2:#A3ACBD; --line:#2C3548; color-scheme: dark; }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; word-break: keep-all; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; }
+h1 { font-family: var(--serif); font-size: clamp(26px, 5vw, 34px); margin: 0 0 6px; text-wrap: balance; }
+.lead { color: var(--ink-2); margin: 0 0 20px; max-width: 62ch; }
+h3 { font-size: 16px; margin: 32px 0 12px; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 10px 0; border-bottom: 1px solid var(--line); }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--sheet); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.sw i { width: 24px; height: 24px; border-radius: 50%; background: var(--sw); }
+.sw[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.sw:focus-visible { outline: 3px solid var(--ink-2); outline-offset: 2px; }
+.sw b { font-weight: 400; color: var(--ink-2); font-size: 13px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.concept { background: var(--sheet); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.concept header { display: flex; align-items: baseline; gap: 10px; }
+.code { font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.concept h2 { font-size: 17px; margin: 0; }
+.stage { background: #EEF1F5; border-radius: 12px; display: grid; place-items: center; padding: 18px 0; }
+.stage svg { width: 136px; height: 136px; }
+.icons { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+.icons > div { display: grid; justify-items: center; gap: 4px; }
+.icons small { color: var(--ink-2); font-size: 11px; }
+.tile { width: 60px; height: 60px; border-radius: 14px; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.16); }
+.tile svg { width: 74%; height: 74%; }
+.tile.s32 { width: 32px; height: 32px; border-radius: 8px; }
+.light { --bg: #EEF1F5; --fg: var(--c); background: var(--bg); }
+.filled { --bg: var(--c); --fg: #FFFFFF; background: var(--bg); }
+.idea { margin: 4px 0 0; }
+.note { margin: 0; color: var(--ink-2); font-size: 14px; }
+.stage { --bg: #EEF1F5; --fg: var(--c); }
+
+.preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.phone { border-radius: 22px; padding: 18px 16px; background: #EEF1F5; color: #1A2540; border: 1px solid var(--line); }
+.phone.dark { background: #131A26; color: #E9EDF4; }
+.phone .top { display: flex; align-items: center; gap: 10px; --bg: transparent; --fg: var(--c); }
+.phone.dark .top { --fg: color-mix(in srgb, var(--c) 65%, white); }
+.phone .top svg { width: 40px; height: 40px; transform: rotate(-4deg); }
+.phone .q { font-family: var(--serif); font-size: 22px; font-weight: 700; margin: 18px 0 14px; line-height: 1.3; }
+.phone .main { border-radius: 16px; padding: 16px; background: var(--c); color: #fff; font-weight: 700; }
+.phone .main span { display: block; font-weight: 400; font-size: 13px; opacity: .85; }
+.phone .card { margin-top: 10px; border-radius: 14px; padding: 12px 14px; background: #fff; color: #1A2540; font-family: var(--serif); }
+.phone.dark .card { background: #1C2433; color: #E9EDF4; }
+.phone .heart { color: var(--c); float: right; font-family: var(--sans); }
+.phone.dark .heart { color: color-mix(in srgb, var(--c) 65%, white); }
+
+.ask { margin-top: 28px; padding: 16px 18px; border-radius: 14px; background: var(--sheet); border: 1px solid var(--line); }
+.ask p { margin: 0 0 6px; }
+.ask p:last-child { margin: 0; color: var(--ink-2); font-size: 14px; }
+</style>
+
+<div class="wrap">
+  <h1>한마디 아이콘 시안 2</h1>
+  <p class="lead">마음에 들어 하신 직인과 네모 말풍선을 바탕으로 9가지를 더 만들었어요. 위 색상 칩을 누르면 모든 시안의 색이 한꺼번에 바뀌어요.</p>
+
+  <div class="bar"><div class="swatches" id="swatches"></div></div>
+
+  <h3>직인 계열</h3>
+  <div class="grid" id="seals"></div>
+
+  <h3>네모 말풍선 계열</h3>
+  <div class="grid" id="bubbles"></div>
+
+  <h3>앱에 입혀 보면</h3>
+  <p class="note" id="preview-note"></p>
+  <div class="preview" id="preview" style="margin-top:12px"></div>
+
+  <div class="ask">
+    <p>시안 번호와 색으로 답해 주세요. 예: "D2 + 비취", "D1 글씨로 M2 모양"</p>
+    <p>시안은 지금 웹폰트 글자로 그렸어요. 고르신 시안은 글자를 도형으로 바꿔서 폰트 없이도 똑같이 보이게 마무리할게요.</p>
+  </div>
+</div>
+
+<script>
+const COLORS = [
+  { id: 'injoo', name: '인주', hex: '#C8382C', note: '도장 빨강' },
+  { id: 'namsaek', name: '남색', hex: '#22335C', note: '공문서 결재 잉크' },
+  { id: 'bichwi', name: '비취', hex: '#1F6E68', note: '차분한 청록' },
+  { id: 'meok', name: '먹', hex: '#2A2D34', note: '먹물 검정' },
+  { id: 'hwangto', name: '황토', hex: '#A8742A', note: '놋쇠·인장 손잡이' },
+  { id: 'jaju', name: '자주', hex: '#7A2E5A', note: '단청 자줏빛' },
+];
+const BUBBLE = 'M72 34h112a36 36 0 0 1 36 36v88a36 36 0 0 1-36 36h-68l-52 36v-36a36 36 0 0 1-28-35V70a36 36 0 0 1 36-36Z';
+const HOLE = 'M86 72h84a10 10 0 0 1 10 10v64a10 10 0 0 1-10 10H86a10 10 0 0 1-10-10V82a10 10 0 0 1 10-10Z';
+const glyph = (ch, font, size, y = 132, fill = 'var(--fg)', weight = 400, x = 128) =>
+  `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-family="${font}" font-size="${size}" font-weight="${weight}" style="fill:${fill}">${ch}</text>`;
+
+const SEALS = [
+  { code: 'D1', name: '주문 직인 · 연성체', idea: '테두리와 글자를 같은 색으로 새긴 주문(朱文) 도장. 손으로 판 듯한 연성체 글씨.', note: '가장 도장다워요. 친근하고 손맛이 있어요.',
+    svg: `<rect x="30" y="30" width="196" height="196" rx="26" fill="none" style="stroke:var(--fg)" stroke-width="16"/>${glyph('한', "'Yeon Sung'", 156, 136)}` },
+  { code: 'D2', name: '백문 직인 · 검은고딕', idea: '면을 꽉 채우고 글자를 하얗게 파낸 백문(白文) 도장. 두꺼운 고딕으로 힘 있게.', note: '작은 크기에서 가장 또렷해요.',
+    svg: `<rect x="26" y="26" width="204" height="204" rx="30" style="fill:var(--fg)"/>${glyph('한', "'Black Han Sans'", 150, 134, 'var(--bg)')}` },
+  { code: 'D3', name: '이중 테두리 · 송명체', idea: '관인처럼 굵고 가는 이중 테두리에 붓맛 있는 명조 한 글자.', note: '가장 격식 있어요. 공공기관 느낌이 강해요.',
+    svg: `<rect x="24" y="24" width="208" height="208" rx="14" fill="none" style="stroke:var(--fg)" stroke-width="12"/><rect x="44" y="44" width="168" height="168" rx="6" fill="none" style="stroke:var(--fg)" stroke-width="4"/>${glyph('한', "'Song Myung'", 132, 132)}` },
+  { code: 'D4', name: '원형 인장 · 도현체', idea: '둥근 인장 안에 반듯한 도현체. 직인보다 부드러운 인상.', note: '가볍고 현대적이에요.',
+    svg: `<circle cx="128" cy="128" r="100" fill="none" style="stroke:var(--fg)" stroke-width="15"/>${glyph('한', "'Do Hyeon'", 140, 134)}` },
+  { code: 'D5', name: '세로 이름도장', idea: '막도장처럼 길쭉한 틀에 한·마·디 세 글자를 세로로.', note: '앱 이름이 다 들어가요. 아이콘으로는 좁아 보일 수 있어요.',
+    svg: `<rect x="74" y="16" width="108" height="224" rx="16" fill="none" style="stroke:var(--fg)" stroke-width="11"/>${glyph('한', "'Gowun Batang', serif", 62, 66, 'var(--fg)', 700)}${glyph('마', "'Gowun Batang', serif", 62, 128, 'var(--fg)', 700)}${glyph('디', "'Gowun Batang', serif", 62, 190, 'var(--fg)', 700)}` },
+];
+const BUBBLES = [
+  { code: 'M1', name: '네모 말풍선 · 기존', idea: '\'마디\'의 ㅁ이 곧 말풍선. 지난 시안 C예요.', note: '가장 단순해요.',
+    svg: `<path style="fill:var(--fg)" fill-rule="evenodd" d="${BUBBLE} ${HOLE}"/>` },
+  { code: 'M2', name: '말풍선 직인', idea: '직인 테두리에 말풍선 꼬리를 달고 안에 한. 마음에 들어 하신 두 가지를 합쳤어요.', note: '도장을 찍듯 한마디를 건넨다는 뜻이에요.',
+    svg: `<path d="${BUBBLE}" fill="none" style="stroke:var(--fg)" stroke-width="15" stroke-linejoin="round"/>${glyph('한', "'Gowun Batang', serif", 104, 116, 'var(--fg)', 700)}` },
+  { code: 'M3', name: '백문 말풍선', idea: '말풍선을 꽉 채우고 한 글자를 하얗게 파냈어요. D2와 M1을 합친 꼴.', note: '홈 화면에서 가장 눈에 띄어요.',
+    svg: `<path d="${BUBBLE}" style="fill:var(--fg)"/>${glyph('한', "'Black Han Sans'", 108, 116, 'var(--bg)')}` },
+  { code: 'M4', name: '주고받는 말풍선', idea: '채운 말풍선과 빈 말풍선이 마주 봐요. 건네고 받는 한마디.', note: '대화 느낌이 살아요. 작게 보면 조금 복잡해요.',
+    svg: `<g transform="translate(6 10) scale(.66)"><path d="${BUBBLE}" style="fill:var(--fg)"/></g><g transform="translate(250 92) scale(-.66 .66)"><path d="${BUBBLE}" style="fill:var(--bg);stroke:var(--fg)" stroke-width="20" stroke-linejoin="round"/></g>` },
+];
+
+const mark = c => `<svg viewBox="0 0 256 256" aria-hidden="true">${c.svg}</svg>`;
+function card(c) {
+  return `<article class="concept" data-code="${c.code}">
+    <header><span class="code">${c.code}</span><h2>${c.name}</h2></header>
+    <div class="stage">${mark(c)}</div>
+    <div class="icons">
+      <div><div class="tile light">${mark(c)}</div><small>밝은 바탕</small></div>
+      <div><div class="tile filled">${mark(c)}</div><small>색 바탕</small></div>
+      <div><div class="tile s32 light">${mark(c)}</div><small>32px</small></div>
+      <div><div class="tile s32 filled">${mark(c)}</div><small>32px</small></div>
+    </div>
+    <p class="idea">${c.idea}</p>
+    <p class="note">${c.note}</p>
+  </article>`;
+}
+document.getElementById('seals').innerHTML = SEALS.map(card).join('');
+document.getElementById('bubbles').innerHTML = BUBBLES.map(card).join('');
+
+const PREVIEW_MARK = BUBBLES[1];
+function phone(dark) {
+  return `<div class="phone ${dark ? 'dark' : ''}">
+    <div class="top">${mark(PREVIEW_MARK)}<strong>한마디</strong></div>
+    <div class="q">오늘은<br>어떤 자리인가요?</div>
+    <div class="main">💬 상황별 멘트<span>상황과 상대만 고르면 바로 쓸 한마디</span></div>
+    <div class="card">오늘은 보고 없이 잔만 올리겠습니다. <span class="heart">♥</span></div>
+  </div>`;
+}
+document.getElementById('preview').innerHTML = phone(false) + phone(true);
+
+const $sw = document.getElementById('swatches');
+let saved = 'injoo';
+try { saved = localStorage.getItem('hanmadi-icon-color') || saved; } catch {}
+function setColor(id) {
+  const col = COLORS.find(c => c.id === id) || COLORS[0];
+  document.documentElement.style.setProperty('--c', col.hex);
+  $sw.querySelectorAll('.sw').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === col.id));
+  document.getElementById('preview-note').textContent =
+    `M2 말풍선 직인을 ${col.name} 색으로 앱 홈 화면에 넣어 본 모습이에요. 큰 버튼과 하트도 같은 색이 돼요.`;
+  try { localStorage.setItem('hanmadi-icon-color', col.id); } catch {}
+}
+$sw.innerHTML = COLORS.map(c =>
+  `<button class="sw" data-id="${c.id}" style="--sw:${c.hex}" aria-pressed="false"><i></i>${c.name} <b>${c.note}</b></button>`).join('');
+$sw.addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) setColor(b.dataset.id); });
+setColor(saved);
+</script>

@@ -1,0 +1,331 @@
+<title>한마디 화면 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* 라떼 하우스 색은 고정, 배치 3방향 × 화면 5장을 폰 목업으로 나란히 */
+:root {
+  --page: #EFE8DF; --panel: #FFFCF7; --text: #3A2A21; --muted: #86725F; --rule: #E2D5C3;
+  /* 앱 토큰 (라떼 하우스) */
+  --foam: #F5EEE5; --cup: #FFFCF7; --ink: #3A2A21; --ink2: #86725F; --ink3: #A8957F; --line: #E8DCCB;
+  --esp: #6B4630; --esp-press: #573823; --cara: #C0794A; --cara-ink: #8A5532; --cara-soft: #F6E6D8; --on-esp: #FBF5EC;
+  --ui: 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+  --hand: 'Gaegu', 'Gowun Dodum', sans-serif;
+  --doc: 'IBM Plex Sans KR', -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page:#1A1512; --panel:#26201C; --text:#F2E7DA; --muted:#B3A291; --rule:#3E332C; color-scheme: dark; } }
+:root[data-theme="dark"] { --page:#1A1512; --panel:#26201C; --text:#F2E7DA; --muted:#B3A291; --rule:#3E332C; color-scheme: dark; }
+body { background: var(--page); color: var(--text); font-family: var(--doc); font-size: 15px; line-height: 1.6; word-break: keep-all; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; }
+h1 { font-size: clamp(24px, 4.6vw, 32px); margin: 0 0 6px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 8px; max-width: 70ch; }
+.dir { margin-top: 44px; }
+.dir > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 4px; }
+.dir h2 { font-size: 22px; margin: 0; }
+.dir .tag { font-size: 14px; color: var(--muted); }
+.dir .pitch { margin: 0 0 14px; max-width: 72ch; color: var(--muted); }
+.strip { display: flex; gap: 16px; overflow-x: auto; padding: 4px 2px 14px; scroll-snap-type: x mandatory; }
+.shot { flex: none; width: 290px; scroll-snap-align: start; display: grid; gap: 8px; }
+.shot > figcaption { font-size: 13px; color: var(--muted); }
+
+/* ---------- 폰 ---------- */
+.ph { position: relative; height: 600px; border-radius: 34px; overflow: hidden; background: var(--foam); color: var(--ink);
+  font-family: var(--ui); border: 6px solid #2A201A; box-shadow: 0 18px 40px -24px rgba(58, 42, 33, .6); }
+.ph .scr { position: absolute; inset: 0; padding: 34px 16px 18px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.ph .notch { position: absolute; top: 8px; left: 50%; width: 84px; height: 20px; margin-left: -42px; border-radius: 12px; background: #2A201A; z-index: 3; }
+.i { width: 22px; height: 22px; flex: none; }
+.i path, .i circle, .i rect { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.duo .i .fill { fill: var(--cara-soft); stroke: none; }
+.line-only .i .fill { display: none; }
+.logo { width: 18px; height: 36px; }
+.topbar { display: flex; align-items: center; gap: 8px; min-height: 36px; }
+.topbar .t { flex: 1; text-align: center; font-weight: 700; font-size: 15px; margin-right: 26px; }
+.back { width: 26px; color: var(--esp); font-size: 22px; line-height: 1; }
+.muted { color: var(--ink2); }
+.small { font-size: 12px; }
+.btn { height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--esp); color: var(--on-esp); font-weight: 700; font-size: 15px; }
+.btn.ghost { background: transparent; color: var(--esp); border: 1.5px solid var(--esp); }
+.heart { color: var(--cara); }
+
+/* ===== A. 카페 메뉴판 ===== */
+.A .date { font-size: 12px; color: var(--ink2); }
+.A .hello { font-family: var(--hand); font-size: 30px; line-height: 1.15; color: var(--esp); margin: 6px 0 2px; }
+.A .board { background: var(--cup); border: 1px solid var(--line); border-radius: 20px; padding: 6px 14px; }
+.A .mrow { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px dashed var(--line); }
+.A .mrow:last-child { border-bottom: 0; }
+.A .mrow .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--cara-soft); color: var(--esp); }
+.A .mrow .nm { font-weight: 700; font-size: 15px; }
+.A .mrow .ds { font-size: 12px; color: var(--ink2); }
+.A .mrow .go { margin-left: auto; font-size: 12px; color: var(--ink3); white-space: nowrap; }
+.A .mrow.hot .go { color: var(--cara-ink); font-weight: 700; }
+.A .sec { font-family: var(--hand); font-size: 22px; color: var(--esp); margin: 4px 2px -4px; }
+.A .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.A .seg span { height: 38px; padding: 0 14px; border-radius: 999px; display: inline-flex; align-items: center; background: var(--cup); border: 1px solid var(--line); font-size: 14px; }
+.A .seg span.on { background: var(--esp); border-color: var(--esp); color: var(--on-esp); }
+.A .order { font-size: 12px; color: var(--ink2); display: flex; gap: 6px; flex-wrap: wrap; }
+.A .order b { color: var(--ink); font-weight: 700; }
+.A .slip { position: relative; background: var(--cup); padding: 16px 16px 10px; border-radius: 4px 4px 14px 14px;
+  box-shadow: 0 8px 18px -14px rgba(107,70,48,.55); }
+.A .slip::before { content: ''; position: absolute; left: 0; right: 0; top: -6px; height: 8px;
+  background: radial-gradient(circle at 6px 0, transparent 5px, var(--cup) 5.5px) 0 0 / 12px 8px repeat-x; }
+.A .slip p { margin: 0; font-size: 15px; line-height: 1.7; }
+.A .slip .acts { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--cara-ink); font-weight: 700; }
+.A .no { font-family: var(--hand); color: var(--cara); font-size: 18px; line-height: 1; margin-bottom: 4px; }
+
+/* ===== B. 카드 스택 ===== */
+.B .hello { font-size: 25px; line-height: 1.3; font-weight: 700; margin: 4px 0 0; letter-spacing: -.01em; }
+.B .hero { background: var(--esp); color: var(--on-esp); border-radius: 24px; padding: 14px 16px; display: grid; gap: 6px; position: relative; overflow: hidden; }
+.B .hero .big { width: 42px; height: 42px; border-radius: 16px; background: rgba(251,245,236,.14); display: grid; place-items: center; }
+.B .hero .big .i { width: 24px; height: 24px; }
+.B .hero .sample { background: rgba(251,245,236,.1); border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.55; }
+.B .hero .ttl { font-size: 19px; font-weight: 700; }
+.B .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.B .tile { background: var(--cup); border: 1px solid var(--line); border-radius: 18px; padding: 11px 12px; display: grid; gap: 4px; }
+.B .tile .ic { width: 34px; height: 34px; border-radius: 12px; background: var(--cara-soft); color: var(--esp); display: grid; place-items: center; }
+.B .tile .nm { font-weight: 700; font-size: 14px; }
+.B .tile .soon { font-size: 11px; color: var(--ink3); }
+.B .q { font-size: 21px; font-weight: 700; margin: 2px 0 0; }
+.B .steps { display: flex; gap: 4px; }
+.B .steps i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.B .steps i.on { background: var(--esp); }
+.B .sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.B .sit { background: var(--cup); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 10px; min-height: 82px; }
+.B .sit .ic { color: var(--esp); }
+.B .sit .nm { font-size: 14px; font-weight: 700; }
+.B .sit.on { border-color: var(--esp); box-shadow: inset 0 0 0 1px var(--esp); }
+.B .people { display: flex; justify-content: space-between; }
+.B .who { display: grid; justify-items: center; gap: 6px; font-size: 12px; }
+.B .who .av { width: 48px; height: 48px; border-radius: 50%; background: var(--cup); border: 1px solid var(--line); display: grid; place-items: center; color: var(--esp); font-weight: 700; }
+.B .who.on .av { background: var(--esp); color: var(--on-esp); border-color: var(--esp); }
+.B .lbl { font-size: 13px; color: var(--ink2); margin-top: 4px; }
+.B .segc { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--line); border-radius: 12px; padding: 3px; }
+.B .segc span { text-align: center; padding: 8px 0; border-radius: 10px; font-size: 14px; }
+.B .segc span.on { background: var(--cup); font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.B .tonehint { font-size: 12px; color: var(--ink2); text-align: center; }
+.B .stack { position: relative; flex: 1; margin-top: 8px; }
+.B .stack .c { position: absolute; left: 0; right: 0; top: 0; bottom: 0; border-radius: 24px; background: var(--cup); border: 1px solid var(--line); }
+.B .stack .c.b2 { transform: translateY(16px) scale(.9); opacity: .55; }
+.B .stack .c.b1 { transform: translateY(8px) scale(.95); opacity: .8; }
+.B .stack .c.top { padding: 22px 20px; display: flex; flex-direction: column; box-shadow: 0 16px 30px -20px rgba(107,70,48,.6); }
+.B .stack .top .pill { align-self: flex-start; font-size: 11px; padding: 3px 10px; border-radius: 999px; background: var(--cara-soft); color: var(--cara-ink); }
+.B .stack .top p { font-size: 19px; line-height: 1.65; margin: 16px 0 0; }
+.B .stack .top .foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 12px; color: var(--ink3); }
+.B .dock { display: grid; grid-template-columns: 52px 1fr 52px; gap: 10px; align-items: center; }
+.B .round { width: 52px; height: 52px; border-radius: 50%; background: var(--cup); border: 1px solid var(--line); display: grid; place-items: center; color: var(--esp); font-size: 20px; }
+.B .masonry { columns: 2; column-gap: 8px; }
+.B .masonry div { break-inside: avoid; background: var(--cup); border: 1px solid var(--line); border-radius: 14px; padding: 10px; margin-bottom: 8px; font-size: 12.5px; line-height: 1.55; }
+.B .masonry small { display: block; color: var(--ink3); margin-top: 6px; }
+.B .filter { display: flex; gap: 6px; overflow: hidden; }
+.B .filter span { flex: none; font-size: 12px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--cup); }
+.B .filter span.on { background: var(--esp); color: var(--on-esp); border-color: var(--esp); }
+
+/* ===== C. 대화형 ===== */
+.C .scr { padding-bottom: 0; gap: 10px; }
+.C .head { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.C .head .nm { font-weight: 700; }
+.C .head .st { font-size: 11px; color: var(--ink3); }
+.C .thread { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.C .b { max-width: 82%; padding: 10px 13px; border-radius: 18px; font-size: 14px; line-height: 1.55; }
+.C .b.app { align-self: flex-start; background: var(--cup); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.C .b.me { align-self: flex-end; background: var(--esp); color: var(--on-esp); border-bottom-right-radius: 6px; }
+.C .b.pick { align-self: flex-start; background: var(--cup); border: 1.5px solid var(--cara); max-width: 92%; }
+.C .b.pick .acts { display: flex; gap: 14px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 12px; font-weight: 700; color: var(--cara-ink); }
+.C .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.C .chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 9px; border-radius: 999px; background: var(--cup); border: 1px solid var(--line); font-size: 13px; color: var(--ink); }
+.C .chip .i { width: 18px; height: 18px; color: var(--esp); }
+.C .tabs { margin: 0 -16px; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 4px 14px; background: color-mix(in srgb, var(--cup) 92%, transparent); border-top: 1px solid var(--line); }
+.C .tabs div { display: grid; justify-items: center; gap: 2px; font-size: 10px; color: var(--ink3); }
+.C .tabs div.on { color: var(--esp); font-weight: 700; }
+.C .tabs .i { width: 22px; height: 22px; }
+.C .sys { align-self: center; font-size: 11px; color: var(--ink3); }
+.C .inbox { display: grid; gap: 8px; }
+.C .inbox .row { background: var(--cup); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 13px; line-height: 1.5; }
+.C .inbox .row small { display: block; color: var(--ink3); margin-top: 4px; }
+
+/* ---------- 아이콘 표 ---------- */
+.iconset { background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 18px; margin-top: 16px; }
+.iconset h3 { margin: 0 0 4px; font-size: 17px; }
+.iconset .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; margin-top: 12px; }
+.iconset .cell { display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--muted); text-align: center; }
+.iconset .cell .ic { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--foam); color: var(--esp); }
+.iconset .cell .ic .i { width: 28px; height: 28px; }
+.iconset .cell .ic.on-esp { background: var(--esp); color: var(--on-esp); }
+.iconset .cell .ic.on-esp .fill { fill: rgba(251,245,236,.18); }
+.vs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+
+.ask { margin-top: 40px; padding: 16px 18px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); }
+.ask p { margin: 0 0 6px; } .ask p:last-child { margin: 0; color: var(--muted); font-size: 14px; }
+</style>
+
+<div class="wrap">
+  <h1>한마디 화면 시안</h1>
+  <p class="lead">라떼 하우스 색은 그대로 두고, 이모지 대신 직접 그린 아이콘 세트를 만들고 배치를 세 방향으로 잡아 봤어요. 방향마다 홈, 상황 선택, 상대·톤 선택, 추천 결과, 즐겨찾기 화면을 그렸어요. 화면 줄은 옆으로 넘겨 볼 수 있어요.</p>
+
+  <section class="iconset">
+    <h3>아이콘 세트</h3>
+    <p class="lead small" style="margin:0">같은 굵기 선, 둥근 끝으로 맞춘 12개예요. 라인형과 듀오톤형 중에 골라 주세요.</p>
+    <div class="vs" id="iconsets"></div>
+  </section>
+
+  <section class="dir">
+    <header><h2>A. 카페 메뉴판</h2><span class="tag">아이콘 라인형</span></header>
+    <p class="pitch">카테고리와 상황을 메뉴판처럼 한 줄씩 늘어놓았어요. 제목은 로고와 같은 개구 손글씨, 상대와 톤은 한 화면에서 고르고, 추천 멘트는 주문서처럼 위가 뜯긴 종이로 나와요. 단계가 하나 줄어요.</p>
+    <div class="strip" id="A"></div>
+  </section>
+
+  <section class="dir">
+    <header><h2>B. 카드 스택</h2><span class="tag">아이콘 듀오톤</span></header>
+    <p class="pitch">홈은 큰 카드 하나와 작은 카드 네 개로 나눴어요. 상대는 동그란 프로필, 톤은 분절 버튼으로 한 화면에서 고르고, 추천 멘트는 한 장씩 크게 보여 주는 카드 더미예요. 옆으로 넘기면 다음 멘트가 나와요.</p>
+    <div class="strip" id="B"></div>
+  </section>
+
+  <section class="dir">
+    <header><h2>C. 대화형</h2><span class="tag">아이콘 라인형 · 하단 탭</span></header>
+    <p class="pitch">앱이 묻고 내가 칩을 눌러 답하는 대화 화면이에요. 고른 내용이 말풍선으로 쌓이고, 추천 멘트도 말풍선으로 와요. 카테고리 다섯 개는 아래 탭으로 옮겨서 어느 화면에서든 바로 이동할 수 있어요.</p>
+    <div class="strip" id="C"></div>
+  </section>
+
+  <div class="ask">
+    <p>배치와 아이콘을 골라 답해 주세요. 예: "B, 듀오톤"</p>
+    <p>섞어도 돼요. 예: "B 홈에 A 결과 화면", "C인데 아이콘은 듀오톤". 고르신 조합으로 실제 앱을 다시 만들게요.</p>
+  </div>
+</div>
+
+<script>
+// 24px 그리드 아이콘: .fill 은 듀오톤일 때만 칠해지는 면
+const P = {
+  chat: '<path class="fill" d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M8 9.5h8M8 13h5"/>',
+  toast: '<path class="fill" d="M4 7h6v3.5a3 3 0 0 1-6 0Z"/><path class="fill" d="M14 7h6v3.5a3 3 0 0 1-6 0Z"/><path d="M4 5h6v5.5a3 3 0 0 1-6 0Z M7 13.5V19 M4.8 19h4.4 M14 5h6v5.5a3 3 0 0 1-6 0Z M17 13.5V19 M14.8 19h4.4 M12 2.5v1.6 M10.4 3.3l.6.7 M13.6 3.3l-.6.7"/>',
+  ring: '<circle class="fill" cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.6"/><path d="M6 6l3.4 3.4M14.6 14.6 18 18M18 6l-3.4 3.4M9.4 14.6 6 18"/>',
+  cup: '<path class="fill" d="M4 10h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16 M8 3.5c-.9 1 .9 2 0 3.2 M12 3.5c-.9 1 .9 2 0 3.2"/>',
+  bookmark: '<path class="fill" d="M7 3h10a1 1 0 0 1 1 1v17l-6-4-6 4V4a1 1 0 0 1 1-1Z"/><path d="M7 3h10a1 1 0 0 1 1 1v17l-6-4-6 4V4a1 1 0 0 1 1-1Z M9.5 8h5"/>',
+  dinner: '<circle class="fill" cx="12" cy="12" r="5.5"/><path d="M4 3v5a2 2 0 0 0 2 2v11 M8 3v5a2 2 0 0 1-2 2 M6 3v4.5 M20 21V3c-2 1-3 4-3 7.5h3"/><circle cx="12" cy="12" r="4"/>',
+  report: '<path class="fill" d="M6 3h8l4 4v14H6Z"/><path d="M6 3h8l4 4v14H6Z M14 3v4h4 M9 14l2 2 4-4"/>',
+  promo: '<circle class="fill" cx="12" cy="9" r="6"/><circle cx="12" cy="9" r="6"/><path d="M9 14.2 7.5 21l4.5-2.4 4.5 2.4-1.5-6.8 M12 6.2l.9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3Z"/>',
+  farewell: '<path class="fill" d="M21 3 3 10.5l7 2.5 2.5 7Z"/><path d="M21 3 3 10.5l7 2.5 2.5 7Z M10 13l5.5-5.5"/>',
+  praise: '<path class="fill" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z M19 16v4.5 M16.8 18.3h4.4"/>',
+  visit: '<path class="fill" d="M4 10h16v9H4Z"/><path d="M3 9.5 12 4l9 5.5 M5.5 10.5v7.5 M10 10.5v7.5 M14 10.5v7.5 M18.5 10.5v7.5 M3 20.5h18"/>',
+  audit: '<circle class="fill" cx="10.5" cy="10.5" r="6.5"/><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3 20.5 20.5 M7.8 9h5.4 M7.8 12h3.4"/>',
+};
+const ic = (k, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[k]}</svg>`;
+const LOGO = `<svg class="logo" viewBox="70 12 116 232" aria-hidden="true"><rect x="70" y="12" width="116" height="232" rx="18" fill="#6B4630"/><text x="128" y="64" text-anchor="middle" dominant-baseline="central" font-family="Gaegu" font-weight="700" font-size="72" fill="#F5EEE5">한</text><text x="128" y="128" text-anchor="middle" dominant-baseline="central" font-family="Gaegu" font-weight="700" font-size="72" fill="#F5EEE5">마</text><text x="128" y="192" text-anchor="middle" dominant-baseline="central" font-family="Gaegu" font-weight="700" font-size="72" fill="#F5EEE5">디</text></svg>`;
+const CATS = [['chat', '상황별 멘트', '상황과 상대만 고르면 바로'], ['toast', '건배사', '선창·후창까지'], ['ring', '위기 수습', '어색한 순간 빠져나가기'], ['cup', '스몰토크', '오늘 꺼낼 화젯거리'], ['bookmark', '수집함', '남이 한 좋은 멘트']];
+const SITS = [['dinner', '회식'], ['report', '보고 후'], ['promo', '승진 축하'], ['farewell', '전보·송별'], ['praise', '칭찬받았을 때'], ['visit', '기관장 방문'], ['audit', '감사·국감 종료 후']];
+const PHR = ['오늘은 보고 없이 잔만 올리겠습니다. 한 잔 받으십시오!', '평소엔 말씀 듣기 바빴는데, 오늘은 웃음소리 듣기 바쁘네요.', '늘 감사합니다, 한 잔 올리겠습니다.'];
+const phone = (inner, cls = '') => `<div class="ph ${cls}"><div class="notch"></div><div class="scr">${inner}</div></div>`;
+const shot = (cap, html) => `<figure class="shot">${html}<figcaption>${cap}</figcaption></figure>`;
+
+// 아이콘 세트 표
+document.getElementById('iconsets').innerHTML = [['line-only', '1. 라인형'], ['duo', '2. 듀오톤형']].map(([cls, name]) => `
+  <div class="${cls}"><h3 style="margin-top:14px">${name}</h3><div class="row">
+    ${[...CATS, ...SITS].map(([k, n]) => `<div class="cell"><div class="ic">${ic(k)}</div>${n}</div>`).join('')}
+  </div></div>`).join('');
+
+// ---------- A ----------
+const A = [
+  shot('홈 · 메뉴판처럼 한 줄씩', phone(`
+    <div class="topbar">${LOGO}<span style="flex:1"></span><span class="small muted"><span class="heart">♥</span> 3</span></div>
+    <div><div class="date">10월 7일 화요일</div><div class="hello">오늘은<br>어떤 자리인가요?</div></div>
+    <div class="board">${CATS.map(([k, n, d], i) => `<div class="mrow ${i ? '' : 'hot'}"><span class="ic">${ic(k)}</span><span><div class="nm">${n}</div><div class="ds">${d}</div></span><span class="go">${i ? '준비 중' : '바로 시작 ›'}</span></div>`).join('')}</div>`, 'A line-only')),
+  shot('상황 고르기 · 메뉴 목록', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">상황별 멘트</span></div>
+    <div class="sec">어떤 자리예요?</div>
+    <div class="board">${SITS.map(([k, n], i) => `<div class="mrow"><span class="ic">${ic(k)}</span><span class="nm">${n}</span><span class="go">30가지 ›</span></div>`).join('')}</div>`, 'A line-only')),
+  shot('상대·톤을 한 화면에서', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">회식</span></div>
+    <div class="sec">누구에게?</div>
+    <div class="seg">${['기관장/임원', '부서장', '선배', '동료', '후배'].map((t, i) => `<span class="${i === 1 ? 'on' : ''}">${t}</span>`).join('')}</div>
+    <div class="sec" style="margin-top:10px">어떤 톤으로?</div>
+    <div class="board">${[['정중', '예의 바르고 무난하게'], ['유쾌', '분위기를 살리는 한마디'], ['짧게', '한 문장으로 끝']].map(([t, d], i) => `<div class="mrow"><span><div class="nm">${t}</div><div class="ds">${d}</div></span><span class="go" style="font-size:18px;color:${i === 1 ? 'var(--esp)' : 'var(--line)'}">${i === 1 ? '●' : '○'}</span></div>`).join('')}</div>
+    <div style="flex:1"></div><div class="btn">멘트 3가지 보기</div>`, 'A line-only')),
+  shot('추천 결과 · 주문서 종이', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">추천 멘트</span></div>
+    <div class="order">주문 <b>회식</b>/<b>부서장</b>/<b>유쾌</b></div>
+    ${PHR.map((p, i) => `<div class="slip" style="margin-top:6px"><div class="no">No.${i + 1}</div><p>${p}</p><div class="acts"><span>복사</span><span class="heart">${i ? '♡' : '♥'}</span></div></div>`).join('')}
+    <div style="flex:1"></div><div class="btn ghost">다른 멘트 주문하기</div>`, 'A line-only')),
+  shot('즐겨찾기 · 상황별로 묶음', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">즐겨찾기</span></div>
+    <div class="sec">회식</div>
+    <div class="slip"><p>오늘은 보고 없이 잔만 올리겠습니다. 한 잔 받으십시오!</p><div class="acts"><span>복사</span><span class="small muted">부서장 · 유쾌</span></div></div>
+    <div class="sec" style="margin-top:6px">보고 후</div>
+    <div class="slip"><p>수정 포인트 정확히 잡아주셔서 시간이 확 줄었습니다.</p><div class="acts"><span>복사</span><span class="small muted">부서장 · 유쾌</span></div></div>`, 'A line-only')),
+];
+document.getElementById('A').innerHTML = A.join('');
+
+// ---------- B ----------
+const B = [
+  shot('홈 · 큰 카드 하나 + 작은 카드 넷', phone(`
+    <div class="topbar">${LOGO}<span style="flex:1"></span><span class="small muted"><span class="heart">♥</span> 3</span></div>
+    <div class="hello">오늘은<br>어떤 자리인가요?</div>
+    <div class="hero"><span class="big">${ic('chat')}</span><span class="ttl">상황별 멘트</span><span class="sample">“오늘은 보고 없이 잔만 올리겠습니다.”</span></div>
+    <div class="bento">${CATS.slice(1).map(([k, n]) => `<div class="tile"><span class="ic">${ic(k)}</span><span class="nm">${n}</span><span class="soon">준비 중</span></div>`).join('')}</div>`, 'B duo')),
+  shot('상황 고르기 · 아이콘 타일', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">상황별 멘트</span></div>
+    <div class="steps"><i class="on"></i><i></i></div>
+    <div class="q">어떤 자리인가요?</div>
+    <div class="sgrid">${SITS.map(([k, n], i) => `<div class="sit ${i ? '' : 'on'}"><span class="ic">${ic(k)}</span><span class="nm">${n}</span></div>`).join('')}</div>`, 'B duo')),
+  shot('상대는 프로필, 톤은 분절 버튼', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">회식</span></div>
+    <div class="steps"><i class="on"></i><i class="on"></i></div>
+    <div class="q">누구에게 말하나요?</div>
+    <div class="people">${['기관장', '부서장', '선배', '동료', '후배'].map((t, i) => `<div class="who ${i === 1 ? 'on' : ''}"><span class="av">${t[0]}</span>${t}</div>`).join('')}</div>
+    <div class="lbl">톤</div>
+    <div class="segc"><span>정중</span><span class="on">유쾌</span><span>짧게</span></div>
+    <div class="tonehint">분위기를 살리는 한마디</div>
+    <div style="flex:1"></div><div class="btn">멘트 보기</div>`, 'B duo')),
+  shot('추천 결과 · 한 장씩 넘기는 카드', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">회식 · 부서장 · 유쾌</span></div>
+    <div class="stack"><div class="c b2"></div><div class="c b1"></div><div class="c top">
+      <span class="pill">유쾌</span><p>평소엔 말씀 듣기 바빴는데, 오늘은 웃음소리 듣기 바쁘네요.</p>
+      <div class="foot"><span>1 / 3</span><span>옆으로 넘기면 다음 멘트</span></div></div></div>
+    <div class="dock"><span class="round">↻</span><div class="btn">복사하기</div><span class="round heart">♡</span></div>`, 'B duo')),
+  shot('즐겨찾기 · 필터 + 두 줄 카드', phone(`
+    <div class="topbar"><span class="back">‹</span><span class="t">즐겨찾기</span></div>
+    <div class="filter"><span class="on">전체 6</span><span>회식</span><span>보고 후</span><span>승진</span><span>송별</span></div>
+    <div class="masonry">
+      <div>오늘은 보고 없이 잔만 올리겠습니다. 한 잔 받으십시오!<small>회식 · 부서장</small></div>
+      <div>승진 축하드립니다!<small>승진 · 부서장</small></div>
+      <div>수정 포인트 정확히 잡아주셔서 시간이 확 줄었습니다.<small>보고 후 · 부서장</small></div>
+      <div>메신저는 그대로니까, 점심 메이트는 계속하는 걸로!<small>송별 · 동료</small></div>
+      <div>과분한 말씀 감사합니다.<small>칭찬 · 기관장</small></div>
+      <div>드디어 끝났네요!<small>감사 · 동료</small></div>
+    </div>`, 'B duo')),
+];
+document.getElementById('B').innerHTML = B.join('');
+
+// ---------- C ----------
+const tabs = on => `<div class="tabs">${CATS.map(([k, n], i) => `<div class="${i === on ? 'on' : ''}">${ic(k)}${n.replace(' 멘트', '')}</div>`).join('')}</div>`;
+const head = `<div class="head">${LOGO}<span><div class="nm">한마디</div><div class="st">상황만 말해 주세요</div></span><span style="flex:1"></span><span class="small muted"><span class="heart">♥</span> 3</span></div>`;
+const C = [
+  shot('홈 · 앱이 먼저 물어봐요', phone(`${head}
+    <div class="thread"><div class="sys">오늘</div>
+      <div class="b app">안녕하세요. 오늘은 어떤 자리인가요?</div>
+      <div class="chips">${SITS.map(([k, n]) => `<span class="chip">${ic(k)}${n}</span>`).join('')}</div></div>${tabs(0)}`, 'C line-only')),
+  shot('상황을 고르면 말풍선으로', phone(`${head}
+    <div class="thread"><div class="sys">오늘</div>
+      <div class="b app">안녕하세요. 오늘은 어떤 자리인가요?</div>
+      <div class="b me">회식</div>
+      <div class="b app">누구에게 말하나요?</div>
+      <div class="chips">${['기관장/임원', '부서장', '선배', '동료', '후배'].map(t => `<span class="chip" style="padding-left:12px">${t}</span>`).join('')}</div></div>${tabs(0)}`, 'C line-only')),
+  shot('톤까지 이어서', phone(`${head}
+    <div class="thread">
+      <div class="b me">회식</div>
+      <div class="b app">누구에게 말하나요?</div>
+      <div class="b me">부서장</div>
+      <div class="b app">어떤 톤으로 할까요?</div>
+      <div class="chips"><span class="chip" style="padding-left:12px">정중</span><span class="chip" style="padding-left:12px">유쾌</span><span class="chip" style="padding-left:12px">짧게</span></div></div>${tabs(0)}`, 'C line-only')),
+  shot('추천 멘트도 말풍선으로', phone(`${head}
+    <div class="thread">
+      <div class="b me">유쾌</div>
+      <div class="b app">이렇게 말해 보세요.</div>
+      ${PHR.map((p, i) => `<div class="b pick">${p}<div class="acts"><span>복사</span><span class="heart">${i ? '♡' : '♥'}</span></div></div>`).join('')}
+      <div class="chips"><span class="chip">${ic('chat')}다른 멘트</span><span class="chip" style="padding-left:12px">처음부터</span></div></div>${tabs(0)}`, 'C line-only')),
+  shot('즐겨찾기 · 수집함 탭 안에', phone(`<div class="topbar"><span class="t" style="margin:0">수집함</span></div>
+    <div class="B"><div class="filter"><span class="on">즐겨찾기 6</span><span>내가 모은 멘트</span><span>상대 메모</span></div></div>
+    <div class="inbox">
+      <div class="row">오늘은 보고 없이 잔만 올리겠습니다. 한 잔 받으십시오!<small>회식 · 부서장 · 유쾌</small></div>
+      <div class="row">수정 포인트 정확히 잡아주셔서 시간이 확 줄었습니다.<small>보고 후 · 부서장</small></div>
+      <div class="row">메신저는 그대로니까, 점심 메이트는 계속하는 걸로!<small>송별 · 동료</small></div>
+    </div><div style="flex:1"></div>${tabs(4)}`, 'C line-only')),
+];
+document.getElementById('C').innerHTML = C.join('');
+</script>

@@ -1,0 +1,162 @@
+<title>한마디 카페 테마 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Hahmlet:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;600;700&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* 시안 페이지 자체는 중립 톤, 각 테마는 폰 목업 안에서만 자기 색과 글꼴을 쓴다 */
+:root {
+  --page: #F3F1EE; --panel: #FFFFFF; --text: #2B2622; --muted: #6E665F; --rule: #E2DDD6;
+  --ui: 'IBM Plex Sans KR', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page:#1A1715; --panel:#24201D; --text:#EFE8E1; --muted:#A79D93; --rule:#3A332E; color-scheme: dark; } }
+:root[data-theme="dark"] { --page:#1A1715; --panel:#24201D; --text:#EFE8E1; --muted:#A79D93; --rule:#3A332E; color-scheme: dark; }
+body { background: var(--page); color: var(--text); font-family: var(--ui); font-size: 15px; line-height: 1.6; word-break: keep-all; }
+.wrap { max-width: 1140px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; }
+h1 { font-size: clamp(24px, 4.6vw, 32px); margin: 0 0 6px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 24px; max-width: 64ch; }
+h2.sec { font-size: 18px; margin: 40px 0 14px; }
+
+.themes { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
+.theme { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.theme > header h3 { margin: 0; font-size: 18px; }
+.theme > header p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chips span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.chips i { width: 16px; height: 16px; border-radius: 50%; background: var(--sw); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+
+/* ---------- phone mockup: 테마 토큰은 .phone에 붙인다 ---------- */
+.phone {
+  border-radius: 30px; padding: 20px 18px 22px; background: var(--t-bg); color: var(--t-ink);
+  border: 1px solid var(--rule); font-family: var(--t-ui); display: flex; flex-direction: column; gap: 14px;
+}
+.p-top { display: flex; align-items: center; justify-content: space-between; }
+.p-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: var(--t-head); font-size: 17px; }
+.p-brand svg { width: 34px; height: 34px; }
+.p-fav { font-size: 14px; color: var(--t-ink2); }
+.p-fav b { color: var(--t-accent); font-weight: 400; }
+.p-hero { font-family: var(--t-head); font-size: 27px; line-height: 1.3; margin: 10px 0 2px; font-weight: var(--t-head-w); letter-spacing: -.01em; }
+.p-main { border-radius: var(--t-r); padding: 18px; background: var(--t-main); color: var(--t-on-main); display: grid; gap: 2px; }
+.p-main strong { font-size: 18px; }
+.p-main span { font-size: 13px; opacity: .85; }
+.p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.p-tile { border-radius: calc(var(--t-r) - 4px); padding: 12px; background: var(--t-card); border: 1px solid var(--t-line); font-size: 14px; font-weight: 600; }
+.p-tile small { display: block; font-weight: 400; color: var(--t-ink2); font-size: 12px; }
+.p-label { font-size: 12px; color: var(--t-ink2); margin-top: 6px; }
+.p-card { position: relative; border-radius: var(--t-r); background: var(--t-card); border: 1px solid var(--t-line); padding: 16px 16px 10px; box-shadow: var(--t-shadow); }
+.p-card p { margin: 0; font-family: var(--t-phrase); font-size: 17px; line-height: 1.7; }
+.p-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--t-line); }
+.p-copy { font-weight: 700; font-size: 14px; color: var(--t-accent-ink); }
+.p-heart { color: var(--t-accent); font-size: 20px; }
+/* 복사 순간: 카페 쿠폰 도장 */
+.p-stamp {
+  position: absolute; right: 54px; bottom: 6px; width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center; transform: rotate(-12deg);
+  border: 2px dashed var(--t-accent); color: var(--t-accent); font-size: 11px; font-weight: 700;
+  background: color-mix(in srgb, var(--t-card) 80%, transparent);
+}
+.p-btn { border-radius: 999px; height: 50px; display: grid; place-items: center; background: var(--t-main); color: var(--t-on-main); font-weight: 700; }
+.why { margin: 0; font-size: 14px; color: var(--muted); }
+
+/* A 라떼 하우스 */
+.t-a { --t-bg:#F5EEE5; --t-card:#FFFCF7; --t-ink:#3A2A21; --t-ink2:#86725F; --t-line:#E8DCCB; --t-main:#6B4630; --t-on-main:#FBF5EC;
+  --t-accent:#C0794A; --t-accent-ink:#8A5532; --t-r:22px; --t-shadow:0 10px 24px -16px rgba(107,70,48,.45);
+  --t-ui:'Gowun Dodum', sans-serif; --t-head:'Gowun Dodum', sans-serif; --t-head-w:400; --t-phrase:'Gowun Dodum', sans-serif; }
+/* B 원목 브런치 */
+.t-b { --t-bg:#EEEEE6; --t-card:#FBFBF7; --t-ink:#2F3329; --t-ink2:#737866; --t-line:#DADBCD; --t-main:#5F7A5C; --t-on-main:#F7F8F2;
+  --t-accent:#A0673F; --t-accent-ink:#7D4E2E; --t-r:16px; --t-shadow:0 8px 20px -14px rgba(60,70,50,.4);
+  --t-ui:'IBM Plex Sans KR', sans-serif; --t-head:'Hahmlet', serif; --t-head-w:600; --t-phrase:'Hahmlet', serif; }
+/* C 저녁 로스터리 */
+.t-c { --t-bg:#211A16; --t-card:#2D2420; --t-ink:#F2E7DA; --t-ink2:#B3A291; --t-line:#43362F; --t-main:#D9984F; --t-on-main:#2A1D14;
+  --t-accent:#E8A963; --t-accent-ink:#F0BC7F; --t-r:20px; --t-shadow:0 12px 26px -14px rgba(0,0,0,.7);
+  --t-ui:'IBM Plex Sans KR', sans-serif; --t-head:'Nanum Myeongjo', serif; --t-head-w:700; --t-phrase:'Nanum Myeongjo', serif; }
+
+/* ---------- icons ---------- */
+.icon-table { background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 18px; overflow-x: auto; }
+.icon-table table { border-collapse: collapse; width: 100%; min-width: 560px; }
+.icon-table th, .icon-table td { padding: 10px; text-align: center; vertical-align: middle; }
+.icon-table th { font-size: 14px; font-weight: 600; }
+.icon-table td.desc { text-align: left; font-size: 14px; color: var(--muted); max-width: 26ch; }
+.icon-table td.desc strong { display: block; color: var(--text); font-size: 15px; }
+.app { width: 68px; height: 68px; border-radius: 16px; display: inline-grid; place-items: center; background: var(--t-icon-bg); box-shadow: 0 3px 8px rgba(0,0,0,.18); }
+.app svg { width: 76%; height: 76%; }
+.app.sm { width: 32px; height: 32px; border-radius: 8px; margin-left: 8px; vertical-align: bottom; }
+.t-a .app, .app.t-a { --t-icon-bg:#6B4630; --fg:#FBF5EC; --bg:#6B4630; --ac:#E3B48C; }
+.app.t-b { --t-icon-bg:#5F7A5C; --fg:#F7F8F2; --bg:#5F7A5C; --ac:#E6C9A6; }
+.app.t-c { --t-icon-bg:#2D2420; --fg:#E8A963; --bg:#2D2420; --ac:#F2E7DA; }
+.phone .p-brand svg { --fg: var(--t-main); --bg: var(--t-bg); --ac: var(--t-accent); }
+
+.ask { margin-top: 28px; padding: 16px 18px; border-radius: 14px; background: var(--panel); border: 1px solid var(--rule); }
+.ask p { margin: 0 0 6px; } .ask p:last-child { margin: 0; color: var(--muted); font-size: 14px; }
+</style>
+
+<div class="wrap">
+  <h1>한마디 카페 테마 시안</h1>
+  <p class="lead">직인과 먹색을 걷어내고 차분하고 따뜻한 카페 느낌으로 세 가지를 만들었어요. 복사할 때 찍히던 도장은 카페 쿠폰 도장으로 바꿨어요.</p>
+
+  <div class="themes" id="themes"></div>
+
+  <h2 class="sec">아이콘 시안 (각 테마 색으로)</h2>
+  <div class="icon-table"><table id="icons"></table></div>
+
+  <div class="ask">
+    <p>테마와 아이콘을 골라 답해 주세요. 예: "테마 B, 아이콘 2"</p>
+    <p>섞어도 돼요. 예: "A 색에 C 글꼴". 고르신 조합으로 앱 전체(홈, 선택, 결과, 즐겨찾기, 설정)를 바꿀게요.</p>
+  </div>
+</div>
+
+<script>
+const BUBBLE = 'M72 34h112a36 36 0 0 1 36 36v88a36 36 0 0 1-36 36h-68l-52 36v-36a36 36 0 0 1-28-35V70a36 36 0 0 1 36-36Z';
+const ICONS = [
+  { name: '김 나는 말풍선', idea: '갓 내린 커피처럼 따뜻한 한마디. 말풍선 위로 김이 올라가요.',
+    svg: `<g transform="translate(34 66) scale(.74)"><path d="${BUBBLE}" style="fill:var(--fg)"/></g>
+          <path d="M104 86c-16-14 16-26 0-50M148 86c-16-14 16-26 0-50" fill="none" style="stroke:var(--ac)" stroke-width="14" stroke-linecap="round"/>` },
+  { name: '머그 말풍선', idea: '네모 말풍선에 손잡이를 달아 머그잔이 됐어요. 말과 커피 한 잔.',
+    svg: `<g transform="translate(14 24) scale(.8)"><path d="${BUBBLE}" style="fill:var(--fg)"/></g>
+          <path d="M190 74h14a28 28 0 0 1 0 56h-14" fill="none" style="stroke:var(--fg)" stroke-width="16" stroke-linecap="round"/>
+          <path d="M70 104h70" style="stroke:var(--bg)" stroke-width="14" stroke-linecap="round"/>` },
+  { name: '라떼 아트 말풍선', idea: '위에서 본 라떼 잔. 크레마 위에 말풍선 모양 라떼 아트.',
+    svg: `<circle cx="128" cy="128" r="104" style="fill:var(--ac)"/><circle cx="128" cy="128" r="84" style="fill:var(--fg)"/>
+          <g transform="translate(70 76) scale(.46)"><path d="${BUBBLE}" style="fill:var(--bg)"/></g>` },
+];
+const THEMES = [
+  { cls: 't-a', name: 'A. 라떼 하우스', mood: '우유 거품 바탕에 에스프레소 브라운. 둥근 고운돋움 하나로 부드럽게.',
+    sw: ['#F5EEE5', '#6B4630', '#C0794A', '#3A2A21'], icon: 0,
+    why: '가장 따뜻하고 포근해요. 글자가 전부 둥근 고딕이라 친근해요.' },
+  { cls: 't-b', name: 'B. 원목 브런치', mood: '귀리빛 바탕에 세이지 그린과 원목 브라운. 멘트는 함렛 명조.',
+    sw: ['#EEEEE6', '#5F7A5C', '#A0673F', '#2F3329'], icon: 1,
+    why: '가장 차분하고 정돈돼 보여요. 사무실에서 꺼내 봐도 튀지 않아요.' },
+  { cls: 't-c', name: 'C. 저녁 로스터리', mood: '어두운 원두빛 바탕에 호박색 조명. 멘트는 나눔명조.',
+    sw: ['#211A16', '#2D2420', '#D9984F', '#F2E7DA'], icon: 2,
+    why: '회식 자리처럼 조명이 낮은 곳에서 보기 편해요. 분위기가 가장 진해요.' },
+];
+const svg = i => `<svg viewBox="0 0 256 256" aria-hidden="true">${ICONS[i].svg}</svg>`;
+
+document.getElementById('themes').innerHTML = THEMES.map(t => `
+  <section class="theme">
+    <header><h3>${t.name}</h3><p>${t.mood}</p></header>
+    <div class="chips">${t.sw.map(c => `<span><i style="--sw:${c}"></i>${c}</span>`).join('')}</div>
+    <div class="phone ${t.cls}">
+      <div class="p-top"><div class="p-brand">${svg(t.icon)}한마디</div><div class="p-fav"><b>♥</b> 3</div></div>
+      <div class="p-hero">오늘은<br>어떤 자리인가요?</div>
+      <div class="p-main"><strong>💬 상황별 멘트</strong><span>상황과 상대만 고르면 바로 쓸 한마디</span></div>
+      <div class="p-grid">
+        <div class="p-tile">🍻 건배사<small>선창·후창까지</small></div>
+        <div class="p-tile">🧯 위기 수습<small>어색한 순간 빠져나가기</small></div>
+      </div>
+      <div class="p-label">추천 멘트 화면</div>
+      <div class="p-card">
+        <p>오늘은 보고 없이 잔만 올리겠습니다. 한 잔 받으십시오!</p>
+        <div class="p-actions"><span class="p-copy">복사</span><span class="p-heart">♥</span></div>
+        <span class="p-stamp">복사됨</span>
+      </div>
+      <div class="p-btn">다른 멘트</div>
+    </div>
+    <p class="why">${t.why}</p>
+  </section>`).join('');
+
+document.getElementById('icons').innerHTML = `
+  <thead><tr><th></th>${THEMES.map(t => `<th>${t.name.split('.')[0]} 색</th>`).join('')}</tr></thead>
+  <tbody>${ICONS.map((ic, i) => `<tr>
+    <td class="desc"><strong>${i + 1}. ${ic.name}</strong>${ic.idea}</td>
+    ${THEMES.map(t => `<td><span class="app ${t.cls}">${svg(i)}</span><span class="app sm ${t.cls}">${svg(i)}</span></td>`).join('')}
+  </tr>`).join('')}</tbody>`;
+</script>

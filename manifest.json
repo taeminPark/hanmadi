@@ -1,0 +1,15 @@
+{
+  "name": "한마디",
+  "short_name": "한마디",
+  "description": "상황과 상대만 고르면 바로 쓸 회사생활 멘트",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F5EEE5",
+  "theme_color": "#F5EEE5",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
