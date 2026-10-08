@@ -119,6 +119,24 @@ button:focus-visible, input:focus-visible { outline: 3px solid color-mix(in srgb
 .chip-tone { flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 16px; border-radius: 18px; }
 .chip-tone small { font-size: 12px; font-weight: 400; color: var(--ink-2); }
 
+.tone-bar {
+  position: sticky; top: var(--head-h, 76px); z-index: 4;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px;
+  margin: 2px -16px 0; padding: 8px 16px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+.tone-seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--sheet); border: 1px solid var(--line); }
+.tone-opt { min-height: 40px; padding: 0 18px; border-radius: 999px; font-size: 15px; font-weight: 700; color: var(--ink-2); transition: background .2s, color .2s; }
+.tone-opt.on { background: var(--main); color: var(--on-main); }
+.tone-hint { font-size: 12px; color: var(--ink-3); }
+.results { display: flex; flex-direction: column; gap: 10px; touch-action: pan-y; transition: transform .24s var(--spring), opacity .24s; }
+.results.dragging { transition: none; }
+.slide-from-right { animation: slide-r .38s var(--spring) both; }
+.slide-from-left { animation: slide-l .38s var(--spring) both; }
+@keyframes slide-r { from { opacity: 0; transform: translateX(56px); } }
+@keyframes slide-l { from { opacity: 0; transform: translateX(-56px); } }
+
 .b.tip { max-width: 94%; background: var(--accent-soft); border-color: transparent; font-size: 14px; }
 .b.tip strong { display: block; margin-bottom: 4px; color: var(--accent-ink); }
 .b.tip ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }

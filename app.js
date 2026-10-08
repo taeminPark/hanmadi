@@ -75,9 +75,9 @@ const FLOWS = {
     steps: [
       { key: 'situation', ask: '안녕하세요. 오늘은 어떤 자리인가요?', options: () => SITUATIONS },
       { key: 'target', ask: '누구에게 말하나요?', options: () => TARGETS },
-      { key: 'tone', ask: '어떤 톤으로 할까요?', options: () => TONES },
     ],
-    change: [['상대 바꾸기', 1], ['톤 바꾸기', 2]],
+    tones: true,   // 톤은 묻지 않고 결과 위 톤 바·좌우 스와이프로 바꾼다 (기본 정중)
+    change: [['상대 바꾸기', 1]],
   },
   event: {
     title: '경조사', sub: '마음을 전할 말을 찾아 드려요', category: 'event',
@@ -166,7 +166,8 @@ const icon = (name, cls = '') => raw(`<svg class="i ${cls}" viewBox="0 0 24 24" 
 const state = {
   tab: 'situation',
   // 탭마다 고른 값과 추천 묶음([[id, id, id], ...] — '다른 멘트'를 누를 때마다 쌓인다)
-  flows: Object.fromEntries(['situation', 'event', 'toast', 'crisis'].map(id => [id, { sel: {}, rounds: [] }])),
+  // seen: 톤을 바꾸기 전에 본 멘트 (다시 돌아와도 새 멘트가 먼저 나오게)
+  flows: Object.fromEntries(['situation', 'event', 'toast', 'crisis'].map(id => [id, { sel: {}, rounds: [], seen: [] }])),
   sheet: false,
 };
 let tips = {};
@@ -240,6 +241,16 @@ function pickBubble(p, sel) {
   </div>`;
 }
 
+function toneBar(current) {
+  return h`
+  <div class="tone-bar">
+    <div class="tone-seg" role="group" aria-label="톤">
+      ${TONES.map(t => h`<button class="tone-opt ${t.label === current ? 'on' : ''}" data-action="tone" data-value="${t.label}" aria-pressed="${t.label === current}">${t.label}</button>`)}
+    </div>
+    <span class="tone-hint" aria-hidden="true">좌우로 밀어서 톤 바꾸기</span>
+  </div>`;
+}
+
 function tipBubble(keys) {
   const list = keys.flatMap(k => tips[k] || []);
   if (!list.length) return '';
@@ -269,11 +280,14 @@ function flowView(id) {
   }
   if (!chips) {
     const envelope = sel.moment === 'envelope';
+    const results = [];
     rounds.forEach((ids, r) => {
-      msgs.push(h`<div class="b app">${r ? '이건 어때요?' : envelope ? '봉투엔 이렇게 써요.' : '이렇게 말해 보세요.'}</div>`);
-      ids.forEach(pid => msgs.push(pickBubble(byId.get(pid), sel)));
-      if (r === 0 && cfg.tips) msgs.push(tipBubble(cfg.tips(sel)));
+      results.push(h`<div class="b app">${r ? '이건 어때요?' : envelope ? '봉투엔 이렇게 써요.' : '이렇게 말해 보세요.'}</div>`);
+      ids.forEach(pid => results.push(pickBubble(byId.get(pid), sel)));
+      if (r === 0 && cfg.tips) results.push(tipBubble(cfg.tips(sel)));
     });
+    if (cfg.tones) msgs.push(toneBar(sel.tone));
+    msgs.push(h`<div class="results">${results}</div>`);
     chips = [
       poolSize(cfg, sel) > 3 ? chip('다른 멘트', 'reroll', { icon: 'reroll' }) : '',
       ...cfg.change.map(([label, step]) => chip(label, 'change', { step })),
@@ -357,9 +371,12 @@ function render({ scroll = false } = {}) {
   const tab = TABS.find(t => t.id === state.tab);
   const body = FLOWS[tab.id] ? flowView(tab.id) : tab.id === 'collect' ? collectView() : soonView(tab);
   $app.innerHTML = fmt(body) + fmt(tabBar()) + fmt(state.sheet ? settingsSheet() : '');
+  // 톤 바가 헤더 바로 아래에 붙도록 헤더 높이를 넘겨 준다
+  const head = $app.querySelector('.head');
+  if (head) document.documentElement.style.setProperty('--head-h', `${head.offsetHeight}px`);
 
   // 새로 생긴 말풍선과 칩만 아래에서 튀어 오르게
-  const items = [...$app.querySelectorAll('.thread > .b, .thread > .sys, .chips > .chip')];
+  const items = [...$app.querySelectorAll('.thread > .b, .thread > .sys, .results > .b, .chips > .chip')];
   if (motionOn()) {
     let n = 0;
     items.forEach((el, i) => {
@@ -383,8 +400,22 @@ function switchTab(id) {
 function newRound() {
   const cfg = FLOWS[state.tab];
   const f = state.flows[state.tab];
-  const recent = f.rounds.flat();  // 이번 대화에서 본 멘트는 모두 뒤로
+  const recent = [...f.seen, ...f.rounds.flat()];  // 이번 대화에서 본 멘트는 모두 뒤로
   f.rounds.push(recommend(phrases, { category: cfg.category, ...f.sel }, recent).map(p => p.id));
+}
+
+// dir: 새 카드가 들어오는 방향 (1 = 오른쪽에서, -1 = 왼쪽에서)
+function setTone(tone, dir) {
+  const f = state.flows[state.tab];
+  if (!tone || tone === f.sel.tone) return;
+  f.seen.push(...f.rounds.flat());
+  f.sel.tone = tone;
+  f.rounds = [];
+  newRound();
+  seenCount = Infinity;
+  render();
+  if (motionOn()) $app.querySelector('.results')?.classList.add(dir < 0 ? 'slide-from-left' : 'slide-from-right');
+  document.getElementById('sr-live').textContent = `${tone} 톤으로 바꿨어요`;
 }
 
 async function copyText(text) {
@@ -428,10 +459,17 @@ const actions = {
     const f = state.flows[state.tab];
     const step = Number(el.dataset.step);
     f.sel[cfg.steps[step].key] = el.dataset.value;
-    if (step === cfg.steps.length - 1) newRound();
+    if (step === cfg.steps.length - 1) {
+      if (cfg.tones && !f.sel.tone) f.sel.tone = TONES[0].label;
+      newRound();
+    }
     render({ scroll: true });
   },
   reroll: () => { newRound(); render({ scroll: true }); },
+  tone: el => {
+    const idx = t => TONES.findIndex(x => x.label === t);
+    setTone(el.dataset.value, idx(el.dataset.value) < idx(state.flows[state.tab].sel.tone) ? -1 : 1);
+  },
   // step 단계부터 다시 고르기 (0이면 처음부터)
   change: el => {
     const cfg = FLOWS[state.tab];
@@ -439,6 +477,7 @@ const actions = {
     const step = Number(el.dataset.step);
     cfg.steps.slice(step).forEach(s => delete f.sel[s.key]);
     f.rounds = [];
+    f.seen = [];
     seenCount = 2 + step * 2;   // '오늘' + 앞 단계 질문·답은 그대로, 새 질문 아래부터 애니메이션
     render({ scroll: step > 0 });
     if (!step) window.scrollTo({ top: 0, behavior: motionOn() ? 'smooth' : 'auto' });
@@ -481,6 +520,39 @@ $app.addEventListener('change', e => {
   const el = e.target.closest('input[data-action]');
   if (el) actions[el.dataset.action]?.(el);
 });
+// 결과 영역을 좌우로 밀면 톤 바꾸기 (왼쪽으로 밀면 다음 톤)
+let swipe = null;
+$app.addEventListener('touchstart', e => {
+  const res = e.target.closest('.results');
+  if (!res || !FLOWS[state.tab]?.tones || e.touches.length > 1) return;
+  swipe = { x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, horiz: null, res };
+}, { passive: true });
+$app.addEventListener('touchmove', e => {
+  if (!swipe) return;
+  const dx = e.touches[0].clientX - swipe.x, dy = e.touches[0].clientY - swipe.y;
+  if (swipe.horiz == null && Math.hypot(dx, dy) > 10) swipe.horiz = Math.abs(dx) > Math.abs(dy) * 1.3;
+  if (!swipe.horiz) return;
+  swipe.dx = dx;
+  if (motionOn()) {
+    swipe.res.classList.add('dragging');
+    swipe.res.style.transform = `translateX(${dx * .5}px)`;
+    swipe.res.style.opacity = 1 - Math.min(Math.abs(dx) / 500, .4);
+  }
+}, { passive: true });
+function endSwipe() {
+  if (!swipe) return;
+  const { dx, horiz, res } = swipe;
+  swipe = null;
+  res.classList.remove('dragging');
+  res.style.transform = ''; res.style.opacity = '';
+  if (!horiz || Math.abs(dx) < 60) return;
+  const i = TONES.findIndex(t => t.label === state.flows[state.tab].sel.tone);
+  const dir = dx < 0 ? 1 : -1;
+  setTone(TONES[(i + dir + TONES.length) % TONES.length].label, dir);
+}
+$app.addEventListener('touchend', endSwipe);
+$app.addEventListener('touchcancel', endSwipe);
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && state.sheet) actions['close-settings']();
 });
