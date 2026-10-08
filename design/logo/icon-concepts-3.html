@@ -1,0 +1,238 @@
+<title>한마디 아이콘 시안 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gaegu:wght@700&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 상단 색 고르기 → 폰 홈 화면에서 한눈에 비교 → 시안별 카드(큰 아이콘 + 실제 크기들) */
+:root {
+  --paper: #F5EEE5; --sheet: #FFFCF7; --ink: #3A2A21; --ink-2: #86725F; --line: #E8DCCB;
+  --main: #6B4630; --accent: #C0794A; --accent-soft: #F6E6D8; --on-main: #FBF5EC;
+  --wall-a: #E9D8C4; --wall-b: #C9A98A;
+  --sans: 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+  --hand: 'Gaegu', 'Gowun Dodum', sans-serif;
+  /* 아이콘 팔레트 (JS가 바꿈) */
+  --i-bg: #F3E6D6; --i-ink: #5E3B26; --i-cr: #FFF8EE; --i-ac: #C0794A; --i-pop: #EFA98A;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #211A16; --sheet: #2D2420; --ink: #F2E7DA; --ink-2: #B3A291; --line: #43362F;
+  --main: #A8714A; --accent: #E3A06C; --accent-soft: #3D2C22; --on-main: #FFF8EF;
+  --wall-a: #3A2C24; --wall-b: #1E1612; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #211A16; --sheet: #2D2420; --ink: #F2E7DA; --ink-2: #B3A291; --line: #43362F;
+  --main: #A8714A; --accent: #E3A06C; --accent-soft: #3D2C22; --on-main: #FFF8EF;
+  --wall-a: #3A2C24; --wall-b: #1E1612; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6;
+  margin: 0; padding-inline: 16px; padding-block: 28px 64px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 36px }
+h1 { font-family: var(--hand); font-size: 34px; line-height: 1.15; margin: 0; color: var(--main); text-wrap: balance }
+h2 { font-size: 19px; margin: 0; text-wrap: balance }
+p { margin: 0 }
+.lead { color: var(--ink-2); max-width: 60ch }
+header { display: grid; gap: 10px }
+
+.palettes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.palettes span { color: var(--ink-2); font-size: 13px; margin-right: 4px }
+.pal { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); background: var(--sheet); color: var(--ink);
+  font: inherit; font-size: 14px; padding: 6px 14px 6px 8px; border-radius: 999px; cursor: pointer }
+.pal i { display: flex; width: 22px; height: 22px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,.08) }
+.pal i b { flex: 1 }
+.pal[aria-pressed="true"] { border-color: var(--main); background: var(--accent-soft); font-weight: 700 }
+.pal:focus-visible, .pick:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+
+/* 폰 홈 화면 */
+.home { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center }
+.phone { width: 100%; max-width: 340px; aspect-ratio: 9 / 16.5; border-radius: 44px; padding: 14px; background: #1b1411;
+  box-shadow: 0 30px 50px -30px rgba(60, 35, 20, .6) }
+.screen { height: 100%; border-radius: 32px; background: radial-gradient(120% 90% at 20% 0%, var(--wall-a), var(--wall-b));
+  padding: 44px 18px 18px; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; row-gap: 18px; column-gap: 10px }
+.app { display: grid; justify-items: center; gap: 5px; min-width: 0 }
+.app .ico { width: 100%; max-width: 60px }
+.app small { font-size: 10.5px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100% }
+.ghost { width: 100%; max-width: 60px; aspect-ratio: 1; border-radius: 22.5%; background: rgba(255,255,255,.28) }
+.home-note { display: grid; gap: 10px; color: var(--ink-2) }
+.home-note b { color: var(--ink) }
+
+.ico { display: block; aspect-ratio: 1; border-radius: 22.5%; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 6px 14px -8px rgba(60, 35, 20, .45) }
+.ico svg { display: block; width: 100%; height: 100% }
+
+/* 시안 카드 */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 16px }
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 22px; padding: 18px; display: grid; gap: 14px; min-width: 0 }
+.card.now { background: transparent; border-style: dashed }
+.card-top { display: flex; gap: 16px; align-items: flex-end }
+.card-top .big { width: 124px; flex: none }
+.sizes { display: flex; gap: 10px; align-items: flex-end }
+.sizes .ico { box-shadow: none }
+.s60 { width: 60px } .s40 { width: 40px } .s29 { width: 29px }
+.tag { font-family: var(--hand); font-size: 22px; color: var(--accent); line-height: 1 }
+.card h2 { display: flex; gap: 8px; align-items: baseline }
+.desc { color: var(--ink-2); font-size: 14px }
+.pick { justify-self: start; font: inherit; font-size: 13.5px; border: 0; border-radius: 12px; padding: 7px 12px; background: var(--accent-soft); color: var(--ink); cursor: pointer }
+.pick[aria-pressed="true"] { background: var(--main); color: var(--on-main) }
+
+.reply { background: var(--main); color: var(--on-main); border-radius: 22px; padding: 18px 20px; display: grid; gap: 6px }
+.reply code { font-family: var(--hand); font-size: 22px }
+
+@media (max-width: 720px) { .home { grid-template-columns: 1fr; justify-items: center } }
+@media (prefers-reduced-motion: no-preference) { .ico svg * { transition: fill .25s, stroke .25s } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>한마디 아이콘 시안 3</h1>
+    <p class="lead">지금 아이콘(세로 이름도장)이 심심하다고 하셔서, 라떼 하우스 분위기는 그대로 두고 표정·소품·색을 넣은 8가지 방향을 그려 봤어요. 아래에서 색을 바꾸면 모든 시안이 같이 바뀝니다.</p>
+  </header>
+
+  <div class="palettes" role="group" aria-label="아이콘 색 조합">
+    <span>색 조합</span>
+  </div>
+
+  <section class="home">
+    <div class="phone" aria-label="아이폰 홈 화면 미리보기"><div class="screen" id="screen"></div></div>
+    <div class="home-note">
+      <h2>홈 화면에 놓으면</h2>
+      <p>실제 아이콘 크기(60px)예요. 작은 크기에서 <b>한눈에 알아보이는지</b>, 다른 앱 사이에서 <b>눈에 띄는지</b>를 같이 봐 주세요.</p>
+      <p>맨 앞 칸이 지금 아이콘입니다.</p>
+    </div>
+  </section>
+
+  <section class="grid" id="cards"></section>
+
+  <div class="reply">
+    <p>마음에 드는 시안 번호와 색을 알려 주세요. 두 개를 섞어도 좋아요.</p>
+    <p><code>예) 3 딸기라떼</code> · <code>1 + 5 섞어서, 라떼</code></p>
+  </div>
+</div>
+
+<script>
+const PALETTES = [
+  { id: 'latte', name: '라떼', c: { bg: '#F3E6D6', ink: '#5E3B26', cr: '#FFF8EE', ac: '#C0794A', pop: '#EFA98A' } },
+  { id: 'espresso', name: '에스프레소', c: { bg: '#5A3A28', ink: '#2E1D13', cr: '#F7E8D4', ac: '#D99357', pop: '#F2B98B' } },
+  { id: 'strawberry', name: '딸기라떼', c: { bg: '#F8DEDB', ink: '#6A3A36', cr: '#FFF7F3', ac: '#E07C84', pop: '#F4A6A0' } },
+  { id: 'matcha', name: '말차라떼', c: { bg: '#DDE6CD', ink: '#3D4A2D', cr: '#FCF9EF', ac: '#7E9C57', pop: '#E7B38A' } },
+];
+
+// 모든 아이콘은 100×100. 색은 CSS 변수(--i-*)로 칠해서 팔레트를 한 번에 바꾼다.
+const C = { bg: 'var(--i-bg)', ink: 'var(--i-ink)', cr: 'var(--i-cr)', ac: 'var(--i-ac)', pop: 'var(--i-pop)' };
+const ICONS = [
+  { n: 1, name: '김 나는 말풍선 머그', desc: '머그에서 오른 김이 말풍선이 돼요. "커피 한 잔 하며 건네는 한마디" 그대로.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      <ellipse cx="47" cy="85" rx="31" ry="4.5" fill="${C.ac}" opacity=".45"/>
+      <path d="M24 50h46v20a14 14 0 0 1-14 14H38a14 14 0 0 1-14-14z" fill="${C.ink}"/>
+      <path d="M70 56h4a9 9 0 0 1 0 18h-5" fill="none" stroke="${C.ink}" stroke-width="6" stroke-linecap="round"/>
+      <rect x="24" y="50" width="46" height="6" fill="${C.ac}"/>
+      <path d="M40 46c-4-4 4-6 0-10M54 46c-4-4 4-6 0-10" fill="none" stroke="${C.ac}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M33 12h34a12 12 0 0 1 0 24H55l-6 6-2-6H33a12 12 0 0 1 0-24z" fill="${C.cr}"/>
+      <g fill="${C.ink}"><circle cx="38" cy="24" r="3.4"/><circle cx="50" cy="24" r="3.4"/><circle cx="62" cy="24" r="3.4"/></g>` },
+  { n: 2, name: '라떼아트 말풍선', desc: '위에서 본 라떼 잔. 우유 거품이 말풍선 모양으로 그려져 있어요.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      <circle cx="47" cy="53" r="38" fill="${C.cr}"/>
+      <rect x="78" y="46" width="16" height="12" rx="6" fill="${C.ink}"/>
+      <circle cx="47" cy="53" r="29" fill="${C.ink}"/>
+      <circle cx="47" cy="53" r="24.5" fill="${C.ac}"/>
+      <path d="M33 40h28a9 9 0 0 1 9 9v4a9 9 0 0 1-9 9H48l-8 7v-7h-7a9 9 0 0 1-9-9v-4a9 9 0 0 1 9-9z" fill="${C.cr}"/>
+      <path d="M47 57c-6-4-8-7-8-9a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 2-2 5-8 9z" fill="${C.pop}"/>` },
+  { n: 3, name: '말풍선 캐릭터 ‘마디’', desc: '볼 빨간 말풍선 친구. 앱 안 빈 화면·축하 화면에도 마스코트로 쓸 수 있어요.',
+    svg: `<rect width="100" height="100" fill="${C.pop}"/>
+      <path d="M50 16c20 0 34 12 34 29S70 74 50 74c-4 0-7-.4-10-1.2L24 82l4-14C20 63 16 55 16 45c0-17 14-29 34-29z" fill="${C.cr}"/>
+      <path d="M50 16c3-6 9-7 12-4" fill="none" stroke="${C.cr}" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="39" cy="43" rx="4" ry="5.5" fill="${C.ink}"/><ellipse cx="61" cy="43" rx="4" ry="5.5" fill="${C.ink}"/>
+      <circle cx="40.5" cy="41" r="1.4" fill="${C.cr}"/><circle cx="62.5" cy="41" r="1.4" fill="${C.cr}"/>
+      <ellipse cx="32" cy="54" rx="5.5" ry="3.4" fill="${C.ac}" opacity=".55"/><ellipse cx="68" cy="54" rx="5.5" ry="3.4" fill="${C.ac}" opacity=".55"/>
+      <path d="M44 53q6 6 12 0" fill="none" stroke="${C.ink}" stroke-width="3.4" stroke-linecap="round"/>` },
+  { n: 4, name: '세 장의 말풍선', desc: '앱이 멘트를 3장씩 건네는 걸 그대로 담았어요. 겹친 말풍선 세 개.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      <g transform="rotate(-10 50 50)"><rect x="22" y="14" width="52" height="34" rx="12" fill="${C.ac}"/></g>
+      <g transform="rotate(6 50 50)"><rect x="28" y="30" width="52" height="34" rx="12" fill="${C.cr}"/></g>
+      <path d="M22 46h50a12 12 0 0 1 12 12v12a12 12 0 0 1-12 12H40l-11 9 2-9h-9a12 12 0 0 1-12-12V58a12 12 0 0 1 12-12z" fill="${C.ink}"/>
+      <g stroke="${C.cr}" stroke-width="4.4" stroke-linecap="round"><path d="M24 59h40"/><path d="M24 69h26"/></g>` },
+  { n: 5, name: 'ㅎ 모노그램', desc: '‘한’의 ㅎ. 동그라미에 꼬리를 달아 말풍선으로 만들었어요. 작아도 또렷해요.',
+    svg: `<rect width="100" height="100" fill="${C.ink}"/>
+      <g stroke-linecap="round" fill="none">
+        <path d="M41 19h18" stroke="${C.cr}" stroke-width="9"/>
+        <path d="M25 33h50" stroke="${C.cr}" stroke-width="9"/>
+      </g>
+      <path d="M50 44a20 20 0 1 1-12.6 35.5L28 84l3.5-10.4A20 20 0 0 1 50 44z" fill="${C.ac}"/>
+      <circle cx="50" cy="64" r="8.5" fill="${C.ink}"/>` },
+  { n: 6, name: '카페 쿠폰 도장', desc: '복사할 때 찍히는 쿠폰 도장을 아이콘으로. 앱 안 경험과 바로 이어져요.',
+    svg: `<rect width="100" height="100" fill="${C.cr}"/>
+      <g opacity=".5" fill="none" stroke="${C.ac}" stroke-width="2.4"><circle cx="18" cy="18" r="8"/><circle cx="82" cy="82" r="8"/><circle cx="82" cy="18" r="8"/><circle cx="18" cy="82" r="8"/></g>
+      <g transform="rotate(-14 50 50)">
+        <circle cx="50" cy="50" r="33" fill="none" stroke="${C.ac}" stroke-width="3.5" stroke-dasharray="5 4"/>
+        <circle cx="50" cy="50" r="26" fill="${C.ac}"/>
+        <path d="M38 38h24a8 8 0 0 1 8 8v4a8 8 0 0 1-8 8H50l-8 7v-7h-4a8 8 0 0 1-8-8v-4a8 8 0 0 1 8-8z" fill="${C.cr}"/>
+        <g fill="${C.ac}"><circle cx="41" cy="48" r="2.6"/><circle cx="50" cy="48" r="2.6"/><circle cx="59" cy="48" r="2.6"/></g>
+      </g>` },
+  { n: 7, name: '따옴표 쿠키', desc: '“ 따옴표를 초코칩 쿠키 두 개로. 커피 옆 디저트 같은 귀여움.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      <g fill="${C.ac}">
+        <path d="M33 30a15 15 0 1 1-2 29.9c2 6 6 9 12 11-15 1-27-9-25-26a15 15 0 0 1 15-14.9z"/>
+        <path d="M67 30a15 15 0 1 1-2 29.9c2 6 6 9 12 11-15 1-27-9-25-26a15 15 0 0 1 15-14.9z"/>
+      </g>
+      <g fill="${C.ink}"><circle cx="28" cy="40" r="2.6"/><circle cx="38" cy="47" r="2.2"/><circle cx="30" cy="52" r="1.8"/>
+        <circle cx="62" cy="41" r="2.2"/><circle cx="72" cy="46" r="2.6"/><circle cx="64" cy="53" r="1.8"/></g>
+      <g fill="${C.cr}" opacity=".7"><circle cx="35" cy="38" r="1.4"/><circle cx="69" cy="37" r="1.4"/></g>` },
+  { n: 8, name: '커피콩 말풍선', desc: '커피콩에 꼬리를 달았어요. 가운데 홈이 웃는 입처럼 보이는 단순한 형태.',
+    svg: `<rect width="100" height="100" fill="${C.ac}"/>
+      <path d="M50 14c19 0 32 15 32 34 0 18-13 32-32 32-5 0-9-1-13-3L22 86l5-14c-6-6-9-14-9-24 0-19 13-34 32-34z" fill="${C.ink}"/>
+      <path d="M50 18c-7 9-7 18 0 30s7 21 0 28" fill="none" stroke="${C.cr}" stroke-width="5" stroke-linecap="round"/>` },
+];
+
+// 지금 아이콘(D5 세로 이름도장)은 실제 파일을 그대로 보여준다.
+const CURRENT = { n: 0, name: '지금 아이콘', desc: '세로 이름도장 · 개구체 · 에스프레소. 비교용이에요.' };
+
+const svg = s => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${s}</svg>`;
+const ico = (it, cls = '') => it.n === 0
+  ? `<span class="ico ${cls}"><img src="data:image/png;base64,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" alt="" style="display:block;width:100%"></span>`
+  : `<span class="ico ${cls}">${svg(it.svg)}</span>`;
+
+// 홈 화면: 지금 + 8개 + 빈 앱 3칸 (4열 × 3줄)
+const screen = document.getElementById('screen');
+screen.innerHTML = [CURRENT, ...ICONS].map(it => `<div class="app">${ico(it)}<small>${it.n ? it.n + '. 한마디' : '지금'}</small></div>`).join('')
+  + Array.from({ length: 3 }, () => '<div class="app"><span class="ghost"></span><small>&nbsp;</small></div>').join('');
+
+const cards = document.getElementById('cards');
+cards.innerHTML = ICONS.map(it => `
+  <article class="card">
+    <div class="card-top">
+      <div class="big">${ico(it)}</div>
+      <div class="sizes">${ico(it, 's60')}${ico(it, 's40')}${ico(it, 's29')}</div>
+    </div>
+    <h2><span class="tag">${it.n}</span>${it.name}</h2>
+    <p class="desc">${it.desc}</p>
+    <button class="pick" id="pick-${it.n}" aria-pressed="false" data-n="${it.n}">이거 좋아요</button>
+  </article>`).join('') + `
+  <article class="card now">
+    <div class="card-top"><div class="big">${ico(CURRENT)}</div></div>
+    <h2>${CURRENT.name}</h2>
+    <p class="desc">${CURRENT.desc}</p>
+  </article>`;
+
+// 좋아요 표시(이 브라우저에만 남는 메모용)
+const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} } };
+const liked = new Set(store.get('hanmadi.icon3.liked') || []);
+const syncLikes = () => cards.querySelectorAll('.pick').forEach(b => {
+  const on = liked.has(+b.dataset.n); b.setAttribute('aria-pressed', on); b.textContent = on ? '♥ 찜했어요' : '이거 좋아요';
+});
+cards.addEventListener('click', e => {
+  const b = e.target.closest('.pick'); if (!b) return;
+  const n = +b.dataset.n; liked.has(n) ? liked.delete(n) : liked.add(n);
+  store.set('hanmadi.icon3.liked', [...liked]); syncLikes();
+});
+syncLikes();
+
+// 색 조합
+const bar = document.querySelector('.palettes');
+bar.insertAdjacentHTML('beforeend', PALETTES.map(p => `<button class="pal" id="pal-${p.id}" data-id="${p.id}" aria-pressed="false">
+  <i aria-hidden="true"><b style="background:${p.c.bg}"></b><b style="background:${p.c.ac}"></b><b style="background:${p.c.ink}"></b></i>${p.name}</button>`).join(''));
+const setPalette = id => {
+  const p = PALETTES.find(x => x.id === id) || PALETTES[0];
+  for (const [k, v] of Object.entries(p.c)) document.documentElement.style.setProperty('--i-' + k, v);
+  bar.querySelectorAll('.pal').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === p.id));
+  store.set('hanmadi.icon3.palette', p.id);
+};
+bar.addEventListener('click', e => { const b = e.target.closest('.pal'); if (b) setPalette(b.dataset.id); });
+setPalette(store.get('hanmadi.icon3.palette') || 'latte');
+</script>

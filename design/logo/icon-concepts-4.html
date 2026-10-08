@@ -1,0 +1,247 @@
+<meta charset="utf-8">
+<title>한마디 아이콘 시안 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gaegu:wght@700&family=Jua&family=Do+Hyeon&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 상단 색 고르기 → 폰 홈 화면 비교 → 1번 글씨 변형 묶음 → 새 캐릭터 묶음 */
+:root {
+  --paper: #F5EEE5; --sheet: #FFFCF7; --ink: #3A2A21; --ink-2: #86725F; --line: #E8DCCB;
+  --main: #6B4630; --accent: #C0794A; --accent-soft: #F6E6D8; --on-main: #FBF5EC;
+  --wall-a: #E9D8C4; --wall-b: #C9A98A;
+  --sans: 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+  --hand: 'Gaegu', 'Gowun Dodum', sans-serif;
+  /* 아이콘 팔레트 (JS가 바꿈) */
+  --i-bg: #F3E6D6; --i-ink: #5E3B26; --i-cr: #FFF8EE; --i-ac: #C0794A; --i-pop: #EFA98A; --i-drop: #8FD3FF;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #211A16; --sheet: #2D2420; --ink: #F2E7DA; --ink-2: #B3A291; --line: #43362F;
+  --main: #A8714A; --accent: #E3A06C; --accent-soft: #3D2C22; --on-main: #FFF8EF;
+  --wall-a: #3A2C24; --wall-b: #1E1612; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #211A16; --sheet: #2D2420; --ink: #F2E7DA; --ink-2: #B3A291; --line: #43362F;
+  --main: #A8714A; --accent: #E3A06C; --accent-soft: #3D2C22; --on-main: #FFF8EF;
+  --wall-a: #3A2C24; --wall-b: #1E1612; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6;
+  margin: 0; padding-inline: 16px; padding-block: 28px 64px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 36px }
+h1 { font-family: var(--hand); font-size: 34px; line-height: 1.15; margin: 0; color: var(--main); text-wrap: balance }
+h2 { font-size: 19px; margin: 0; text-wrap: balance }
+p { margin: 0 }
+.lead { color: var(--ink-2); max-width: 60ch }
+header { display: grid; gap: 10px }
+
+.palettes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.palettes span { color: var(--ink-2); font-size: 13px; margin-right: 4px }
+.pal { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); background: var(--sheet); color: var(--ink);
+  font: inherit; font-size: 14px; padding: 6px 14px 6px 8px; border-radius: 999px; cursor: pointer }
+.pal i { display: flex; width: 22px; height: 22px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,.08) }
+.pal i b { flex: 1 }
+.pal[aria-pressed="true"] { border-color: var(--main); background: var(--accent-soft); font-weight: 700 }
+.pal:focus-visible, .pick:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+
+/* 폰 홈 화면 */
+.home { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center }
+.phone { width: 100%; max-width: 340px; aspect-ratio: 9 / 16.5; border-radius: 44px; padding: 14px; background: #1b1411;
+  box-shadow: 0 30px 50px -30px rgba(60, 35, 20, .6) }
+.screen { height: 100%; border-radius: 32px; background: radial-gradient(120% 90% at 20% 0%, var(--wall-a), var(--wall-b));
+  padding: 44px 18px 18px; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; row-gap: 18px; column-gap: 10px }
+.app { display: grid; justify-items: center; gap: 5px; min-width: 0 }
+.app .ico { width: 100%; max-width: 60px }
+.app small { font-size: 10.5px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100% }
+.ghost { width: 100%; max-width: 60px; aspect-ratio: 1; border-radius: 22.5%; background: rgba(255,255,255,.28) }
+.home-note { display: grid; gap: 10px; color: var(--ink-2) }
+.home-note b { color: var(--ink) }
+
+.ico { display: block; aspect-ratio: 1; border-radius: 22.5%; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 6px 14px -8px rgba(60, 35, 20, .45) }
+.ico svg { display: block; width: 100%; height: 100% }
+
+/* 시안 카드 */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 16px }
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 22px; padding: 18px; display: grid; gap: 14px; min-width: 0 }
+.card.now { background: transparent; border-style: dashed }
+.card-top { display: flex; gap: 16px; align-items: flex-end }
+.card-top .big { width: 124px; flex: none }
+.sizes { display: flex; gap: 10px; align-items: flex-end }
+.sizes .ico { box-shadow: none }
+.s60 { width: 60px } .s40 { width: 40px } .s29 { width: 29px }
+.tag { font-family: var(--hand); font-size: 22px; color: var(--accent); line-height: 1 }
+.card h2 { display: flex; gap: 8px; align-items: baseline }
+.desc { color: var(--ink-2); font-size: 14px }
+.pick { justify-self: start; font: inherit; font-size: 13.5px; border: 0; border-radius: 12px; padding: 7px 12px; background: var(--accent-soft); color: var(--ink); cursor: pointer }
+.pick[aria-pressed="true"] { background: var(--main); color: var(--on-main) }
+
+.reply { background: var(--main); color: var(--on-main); border-radius: 22px; padding: 18px 20px; display: grid; gap: 6px }
+.reply code { font-family: var(--hand); font-size: 22px }
+
+@media (max-width: 720px) { .home { grid-template-columns: 1fr; justify-items: center } }
+@media (prefers-reduced-motion: no-preference) { .ico svg * { transition: fill .25s, stroke .25s } }
+.group { display: grid; gap: 12px }
+.group-title { font-family: var(--hand); font-size: 26px; color: var(--main) }
+.group > .desc { max-width: 60ch }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>한마디 아이콘 시안 4</h1>
+    <p class="lead">카페 느낌은 덜어 내고, 굵은 외곽선의 만화 스타일로 다시 그렸어요. 위쪽은 마음에 드신 1번에 "한마디" 글씨를 넣은 버전이고, 아래쪽은 회사생활을 소재로 한 새 캐릭터예요. 색을 바꾸면 모든 시안이 같이 바뀝니다.</p>
+  </header>
+
+  <div class="palettes" role="group" aria-label="아이콘 색 조합">
+    <span>색 조합</span>
+  </div>
+
+  <section class="home">
+    <div class="phone" aria-label="아이폰 홈 화면 미리보기"><div class="screen" id="screen"></div></div>
+    <div class="home-note">
+      <h2>홈 화면에 놓으면</h2>
+      <p>실제 아이콘 크기(60px)예요. 작은 크기에서도 <b>"한마디" 글씨가 읽히는지</b> 같이 봐 주세요.</p>
+      <p>맨 앞 칸이 지금 아이콘입니다.</p>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 class="group-title">1번 + "한마디" 글씨</h2>
+    <p class="desc">머그에서 오른 김이 말풍선이 되고, 그 안에 "한마디"를 넣었어요. 글씨체만 다르게 했고, 1-E는 머그에 얼굴을 그려 넣었어요.</p>
+    <div class="grid" id="cards-a"></div>
+  </section>
+
+  <section class="group">
+    <h2 class="group-title">새 카툰 캐릭터</h2>
+    <p class="desc">회사생활 한마디라는 앱 주제에 맞춰, 말풍선이 직장인이 된 캐릭터들이에요.</p>
+    <div class="grid" id="cards-b"></div>
+  </section>
+
+  <div class="reply">
+    <p>마음에 드는 번호와 색을 알려 주세요. 섞어도 좋아요.</p>
+    <p><code>예) 1-B 레몬</code> · <code>F 표정 + 1-A 글씨, 하늘</code></p>
+  </div>
+</div>
+
+<script>
+const PALETTES = [
+  { id: 'lemon', name: '레몬', c: { bg: '#FFE27A', ink: '#2D2A26', cr: '#FFFDF4', ac: '#FF8A5B', pop: '#FFB3A1', drop: '#8FD3FF' } },
+  { id: 'sky', name: '하늘', c: { bg: '#A9DBF5', ink: '#1F2D3D', cr: '#FFFFFF', ac: '#FFB547', pop: '#FF9AA2', drop: '#E4F6FF' } },
+  { id: 'mint', name: '민트', c: { bg: '#BFE8D4', ink: '#24342C', cr: '#FFFFFF', ac: '#F28C6B', pop: '#FFC2B0', drop: '#9AD8FA' } },
+  { id: 'latte', name: '라떼(지금 앱 색)', c: { bg: '#F3E6D6', ink: '#3A2A21', cr: '#FFF8EE', ac: '#C0794A', pop: '#EFA98A', drop: '#9CCFEF' } },
+];
+const C = { bg: 'var(--i-bg)', ink: 'var(--i-ink)', cr: 'var(--i-cr)', ac: 'var(--i-ac)', pop: 'var(--i-pop)', drop: 'var(--i-drop)' };
+const O = `stroke="${C.ink}" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"`;
+
+// 1번 카툰판: 말풍선 안에 "한마디"
+const mug = (font, size, dy, face = false) => `<rect width="100" height="100" fill="${C.bg}"/>
+  <ellipse cx="48" cy="89" rx="27" ry="4" fill="${C.ink}" opacity=".18"/>
+  <path d="M69 62h3a7.5 7.5 0 0 1 0 15h-5" fill="none" ${O} stroke-width="4.2"/>
+  <path d="M28 57h41v17a12 12 0 0 1-12 12H40a12 12 0 0 1-12-12z" fill="${C.ac}" ${O}/>
+  <ellipse cx="48.5" cy="57" rx="20.5" ry="4" fill="${C.cr}" ${O}/>
+  <path d="M33 66v8" stroke="${C.cr}" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  ${face ? `<g fill="${C.ink}"><circle cx="42" cy="69" r="2.4"/><circle cx="55" cy="69" r="2.4"/></g>
+    <path d="M44.5 74.5q4 3.5 8 0" fill="none" ${O} stroke-width="2.6"/>
+    <g fill="${C.pop}"><ellipse cx="37.5" cy="74" rx="3" ry="1.8"/><ellipse cx="59.5" cy="74" rx="3" ry="1.8"/></g>` : ''}
+  <path d="M42 51c-3-3 3-4 0-7M55 51c-3-3 3-4 0-7" fill="none" stroke="${C.ink}" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M26 8h48a15 15 0 0 1 0 30H57l-8 7-1-7H26a15 15 0 0 1 0-30z" fill="${C.cr}" ${O}/>
+  <text x="50" y="${23 + dy}" text-anchor="middle" dominant-baseline="middle" font-family="${font}" font-size="${size}" fill="${C.ink}">한마디</text>`;
+
+const GROUP_A = [
+  { n: '1-A', name: '주아체', desc: '동글동글 두꺼운 글씨. 가장 만화 같아요.', svg: mug("'Jua'", 19, 0) },
+  { n: '1-B', name: '도현체', desc: '각지고 굵어서 작은 크기에서도 잘 읽혀요.', svg: mug("'Do Hyeon'", 20, .5) },
+  { n: '1-C', name: '개구체', desc: '지금 아이콘과 같은 손글씨. 이어지는 느낌을 원하면.', svg: mug("'Gaegu'", 21, -.5) },
+  { n: '1-D', name: '검은고딕', desc: '가장 굵고 힘 있는 글씨. 간판처럼 또렷해요.', svg: mug("'Black Han Sans'", 17.5, .5) },
+  { n: '1-E', name: '주아체 + 머그 얼굴', desc: '머그에 눈·볼터치를 그려 넣은 익살 버전이에요.', svg: mug("'Jua'", 19, 0, true) },
+];
+
+// 말풍선 몸통 (꼬리 왼쪽 아래)
+const body = (fill = C.cr) => `<path d="M50 14c19 0 33 12 33 28S69 70 50 70c-3.5 0-7-.4-10-1.2L25 77l4.5-12.5C21.5 59 17 51 17 42c0-16 14-28 33-28z" fill="${fill}" ${O}/>`;
+const GROUP_B = [
+  { n: 'F', name: '넥타이 맨 말풍선', desc: '출근한 말풍선 신입. 넥타이에 활짝 웃는 얼굴.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      ${body()}
+      <path d="M45 69l5 4 5-4-1 4 3 15-7 6-7-6 3-15z" fill="${C.ac}" ${O} stroke-width="3"/>
+      <g fill="${C.ink}"><ellipse cx="39" cy="38" rx="3.2" ry="4.4"/><ellipse cx="61" cy="38" rx="3.2" ry="4.4"/></g>
+      <path d="M40 48q10 10 20 0z" fill="${C.ink}" ${O} stroke-width="3"/>
+      <g fill="${C.pop}"><ellipse cx="31" cy="47" rx="4.5" ry="2.8"/><ellipse cx="69" cy="47" rx="4.5" ry="2.8"/></g>
+      <path d="M80 16l4-5M86 24l6-2M74 11l1-6" stroke="${C.ink}" stroke-width="3" stroke-linecap="round"/>` },
+  { n: 'G', name: '꾸벅 말풍선', desc: '허리 숙여 인사하는 말풍선. 정중하지만 귀여운 한마디.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      <g transform="rotate(24 50 52)">${body()}
+        <path d="M34 40q5-5 10 0M56 40q5-5 10 0" fill="none" ${O} stroke-width="3.2"/>
+        <path d="M45 50q5 4 10 0" fill="none" ${O} stroke-width="3"/>
+        <g fill="${C.pop}"><ellipse cx="32" cy="49" rx="4.5" ry="2.8"/><ellipse cx="68" cy="49" rx="4.5" ry="2.8"/></g>
+      </g>
+      <path d="M10 30q4-4 8 0M8 42q4-4 8 0" fill="none" stroke="${C.ink}" stroke-width="3" stroke-linecap="round"/>
+      <text x="74" y="90" text-anchor="middle" font-family="'Gaegu'" font-weight="700" font-size="17" fill="${C.ink}">꾸벅</text>` },
+  { n: 'H', name: '사원증 말풍선', desc: '목걸이 사원증에 증명사진 대신 웃는 말풍선. 이름 칸이 "한마디".',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      <path d="M30 0l14 22M70 0L56 22" stroke="${C.ac}" stroke-width="7" stroke-linecap="round"/>
+      <rect x="42" y="18" width="16" height="9" rx="3" fill="${C.cr}" ${O} stroke-width="3"/>
+      <rect x="22" y="25" width="56" height="68" rx="9" fill="${C.cr}" ${O}/>
+      <rect x="33" y="33" width="34" height="32" rx="6" fill="${C.pop}" ${O} stroke-width="3"/>
+      <path d="M50 37c8 0 13 5 13 11s-5 11-13 11c-1.5 0-3-.2-4-.5L39 61l2-5c-2-2-4-5-4-8 0-6 5-11 13-11z" fill="${C.cr}" ${O} stroke-width="2.6"/>
+      <g fill="${C.ink}"><circle cx="45.5" cy="47" r="1.8"/><circle cx="54.5" cy="47" r="1.8"/></g>
+      <path d="M47 51.5q3 2.5 6 0" fill="none" ${O} stroke-width="2"/>
+      <text x="50" y="80" text-anchor="middle" dominant-baseline="middle" font-family="'Jua'" font-size="14" fill="${C.ink}">한마디</text>` },
+  { n: 'I', name: '땀 삐질 말풍선', desc: '할 말이 막혀 땀 흘리는 표정. 위기 수습 탭이 떠오르는 익살.',
+    svg: `<rect width="100" height="100" fill="${C.bg}"/>
+      ${body()}
+      <path d="M33 37l8 3M67 37l-8 3" ${O} stroke-width="3.2"/>
+      <g fill="${C.ink}"><circle cx="40" cy="44" r="3"/><circle cx="60" cy="44" r="3"/></g>
+      <path d="M40 55q3-3 5 0t5 0 5 0 5 0" fill="none" ${O} stroke-width="3"/>
+      <path d="M77 22c4 6 6 9 6 12a6 6 0 0 1-12 0c0-3 2-6 6-12z" fill="${C.drop}" ${O} stroke-width="3"/>
+      <path d="M86 46c2 3 3 4.5 3 6a3 3 0 0 1-6 0c0-1.5 1-3 3-6z" fill="${C.drop}" ${O} stroke-width="2.4"/>` },
+];
+
+const CURRENT = { n: '지금', name: '지금 아이콘' };
+const svg = s => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${s}</svg>`;
+const ico = (it, cls = '') => it === CURRENT
+  ? `<span class="ico ${cls}"><img src="data:image/png;base64,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" alt="" style="display:block;width:100%"></span>`
+  : `<span class="ico ${cls}">${svg(it.svg)}</span>`;
+
+const ALL = [...GROUP_A, ...GROUP_B];
+document.getElementById('screen').innerHTML = [CURRENT, ...ALL].map(it =>
+  `<div class="app">${ico(it)}<small>${it === CURRENT ? '지금' : it.n + ' 한마디'}</small></div>`).join('')
+  + Array.from({ length: 2 }, () => '<div class="app"><span class="ghost"></span><small>&nbsp;</small></div>').join('');
+
+const card = it => `
+  <article class="card">
+    <div class="card-top">
+      <div class="big">${ico(it)}</div>
+      <div class="sizes">${ico(it, 's60')}${ico(it, 's40')}${ico(it, 's29')}</div>
+    </div>
+    <h2><span class="tag">${it.n}</span>${it.name}</h2>
+    <p class="desc">${it.desc}</p>
+    <button class="pick" id="pick-${it.n}" aria-pressed="false" data-n="${it.n}">이거 좋아요</button>
+  </article>`;
+document.getElementById('cards-a').innerHTML = GROUP_A.map(card).join('');
+document.getElementById('cards-b').innerHTML = GROUP_B.map(card).join('') + `
+  <article class="card now">
+    <div class="card-top"><div class="big">${ico(CURRENT)}</div></div>
+    <h2>지금 아이콘</h2>
+    <p class="desc">세로 이름도장 · 개구체 · 에스프레소. 비교용이에요.</p>
+  </article>`;
+
+const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} } };
+const liked = new Set(store.get('hanmadi.icon4.liked') || []);
+const syncLikes = () => document.querySelectorAll('.pick').forEach(b => {
+  const on = liked.has(b.dataset.n); b.setAttribute('aria-pressed', on); b.textContent = on ? '♥ 찜했어요' : '이거 좋아요';
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('.pick'); if (!b) return;
+  liked.has(b.dataset.n) ? liked.delete(b.dataset.n) : liked.add(b.dataset.n);
+  store.set('hanmadi.icon4.liked', [...liked]); syncLikes();
+});
+syncLikes();
+
+const bar = document.querySelector('.palettes');
+bar.insertAdjacentHTML('beforeend', PALETTES.map(p => `<button class="pal" id="pal-${p.id}" data-id="${p.id}" aria-pressed="false">
+  <i aria-hidden="true"><b style="background:${p.c.bg}"></b><b style="background:${p.c.ac}"></b><b style="background:${p.c.ink}"></b></i>${p.name}</button>`).join(''));
+const setPalette = id => {
+  const p = PALETTES.find(x => x.id === id) || PALETTES[0];
+  for (const [k, v] of Object.entries(p.c)) document.documentElement.style.setProperty('--i-' + k, v);
+  bar.querySelectorAll('.pal').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === p.id));
+  store.set('hanmadi.icon4.palette', p.id);
+};
+bar.addEventListener('click', e => { const b = e.target.closest('.pal'); if (b) setPalette(b.dataset.id); });
+setPalette(store.get('hanmadi.icon4.palette') || 'lemon');
+</script>

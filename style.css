@@ -70,7 +70,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid color-mix(in srgb
   -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
   border-bottom: 1px solid var(--line);
 }
-.logo { width: 30px; height: 60px; transform: rotate(-4deg); }
+.logo { width: 54px; height: 54px; transform: rotate(-4deg); }
 .head-text { flex: 1; min-width: 0; }
 .head-title { font-weight: 700; font-size: 20px; line-height: 1.2; }
 .head-sub { font-size: 13px; color: var(--ink-3); }

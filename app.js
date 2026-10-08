@@ -383,7 +383,7 @@ function switchTab(id) {
 function newRound() {
   const cfg = FLOWS[state.tab];
   const f = state.flows[state.tab];
-  const recent = f.rounds.flat().slice(-6);
+  const recent = f.rounds.flat();  // 이번 대화에서 본 멘트는 모두 뒤로
   f.rounds.push(recommend(phrases, { category: cfg.category, ...f.sel }, recent).map(p => p.id));
 }
 

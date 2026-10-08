@@ -1,5 +1,6 @@
 """내장 멘트 원본 → data/phrases.json 생성. 멘트 수정은 이 파일에서 하고 다시 실행."""
 import json, pathlib
+from collections import Counter
 
 SIT = {"dinner": "회식", "report": "보고 후", "promotion": "승진 축하", "farewell": "전보·송별",
        "praised": "칭찬받았을 때", "visit": "기관장 방문", "audit": "감사·국감 종료 후",
@@ -782,6 +783,23 @@ TOASTS = {
               "큰일을 끝낸 날의 한 잔은 늘 특별합니다. 오늘 이 잔에는 그동안의 고생과 뿌듯함이 같이 담겨 있습니다. 다음에 또 어려운 일이 오더라도 이 팀이라면 해낼 수 있다는 자신감을 담아, 위하여!"]},
 }
 
+# ---------- 추가분 (tools/more_*.py) ----------
+from more_sit1 import MORE as M1
+from more_sit2 import MORE as M2
+from more_sit3 import MORE as M3
+from more_other import EVENT_MORE2, CRISIS_MORE, TOASTS_MORE
+SIT_MORE = {**M1, **M2, **M3}
+for e, moments in EVENT_MORE2.items():
+    for m, groups in moments.items():
+        for g, texts in groups.items():
+            EVENTS[e][m][g] += texts
+for sit, groups in CRISIS_MORE.items():
+    for g, texts in groups.items():
+        CRISIS[sit][g] += texts
+for occasion, styles in TOASTS_MORE.items():
+    for style, items in styles.items():
+        TOASTS[occasion][style] += items
+
 out = []
 for s, targets in DATA.items():
     for t, texts in targets.items():
@@ -798,6 +816,14 @@ for s, targets in EXTRA.items():
             out.append({"id": f"{s}_{t}_{tone_id}_03", "category": "situation", "text": text,
                         "situation": SIT[s], "target": TGT[t], "tone": tone, "tags": [],
                         "source": "builtin", "lead": "", "response": ""})
+for s, targets in SIT_MORE.items():
+    for t, tones in targets.items():
+        for tone_id, tone in TONES:
+            assert len(tones[tone]) == 5, (s, t, tone)
+            for i, text in enumerate(tones[tone]):
+                out.append({"id": f"{s}_{t}_{tone_id}_{i + 4:02d}", "category": "situation", "text": text,
+                            "situation": SIT[s], "target": TGT[t], "tone": tone, "tags": [],
+                            "source": "builtin", "lead": "", "response": ""})
 for e, moments in EVENTS.items():
     for m, groups in moments.items():
         for g, texts in groups.items():
@@ -820,6 +846,8 @@ for oi, (occasion, styles) in enumerate(TOASTS.items()):
                         "situation": occasion, "style": style, "target": "", "tone": "", "tags": [],
                         "source": "builtin", "lead": lead, "response": response})
 assert len({p["id"] for p in out}) == len(out)
+dup = [t for t, n in Counter((p["category"], p["situation"], p["target"], p.get("moment"), p.get("style"), p["text"]) for p in out).items() if n > 1]
+assert not dup, dup
 data_dir = pathlib.Path(__file__).resolve().parent.parent / "data"
 (data_dir / "phrases.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 (data_dir / "tips.json").write_text(json.dumps(TIPS, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
