@@ -845,6 +845,16 @@ for oi, (occasion, styles) in enumerate(TOASTS.items()):
             out.append({"id": f"toast_{oi + 1:02d}_{STYLE_ID[style]}_{i + 1:02d}", "category": "toast", "text": text,
                         "situation": occasion, "style": style, "target": "", "tone": "", "tags": [],
                         "source": "builtin", "lead": lead, "response": response})
+from content_expansion import expand
+out.extend(expand())
+TIPS.update({
+    '일정 지연 안내': ['기한이 지난 뒤보다 지연 가능성을 알았을 때 먼저 공유하세요.', '현재 진행률, 막힌 이유, 가능한 대안, 다음 안내 시점을 구분하면 상대가 판단하기 쉬워요.'],
+    '의견이 다를 때': ['상대의 의도를 추측하기보다 판단의 근거와 전제를 물어보세요.', '공통 목표를 확인한 뒤 우려와 대안을 이야기하면 논점이 선명해져요.'],
+    '정중히 거절할 때': ['거절 이유를 자세히 공개할 의무는 없어요. 가능한 범위와 어려운 범위를 분명하게 말하세요.', '대안을 약속할 때는 실제로 도울 수 있는 범위만 제안하세요.'],
+    '피드백 요청': ['막연히 어떤지 묻기보다 검토받고 싶은 항목을 정해 요청하세요.', '상대에게 필요한 맥락, 검토 범위, 희망 시점을 함께 알려주세요.'],
+    '회의를 시작할 때': ['오늘 끝내야 할 결정과 공유만 할 항목을 구분하세요.', '참석 방식과 직급에 관계없이 발언할 기회를 나누세요.'],
+    '업무 인수인계': ['자료 위치뿐 아니라 판단 기준과 예외 상황을 남기세요.', '미정인 사항은 확정된 것처럼 설명하지 말고 확인할 사람과 다음 조치를 적으세요.'],
+})
 assert len({p["id"] for p in out}) == len(out)
 dup = [t for t, n in Counter((p["category"], p["situation"], p["target"], p.get("moment"), p.get("style"), p["text"]) for p in out).items() if n > 1]
 assert not dup, dup

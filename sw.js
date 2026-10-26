@@ -1,5 +1,5 @@
 // 네트워크 우선, 실패하면 캐시 (오프라인 동작)
-const CACHE = 'hanmadi-v8';
+const CACHE = 'hanmadi-v9';
 const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'store.js', 'recommend.js', 'gemini.js',
   'data/phrases.json', 'data/tips.json', 'manifest.json', 'logo.svg', 'icon.svg', 'icon-180.png', 'icon-512.png'];
 

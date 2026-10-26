@@ -34,3 +34,22 @@ store.write('recentSituations',[null,{}, {tab:'fake',sel:{} }]);assert.equal(api
 store.saveSettings({workplace:'company'});assert.equal(api.display('기관장/임원 부서장 감사·국감'),'대표/임원 팀장 감사·평가');
 api.state.tab='collect';api.state.query='<script>';assert(!api.collectionView().__raw.includes('value="<script>"'));
 console.log(`PASS: ${conditions} recommendation combinations; strict tone and length; exhausted pools; bounded history; resume/restore; invalid storage; quota failure; company wording; escaped search.`);
+// 내용 확장: 모든 선택 조합에 실제 답변이 있고, 기존 ID도 유지된다.
+for(const [tab,cfg]of Object.entries(api.getFlows()))walk(cfg,{},0,sel=>{
+  for(const tone of cfg.tones?['정중','유쾌']:[undefined])for(const length of cfg.tones?['전체','짧게']:[undefined]){
+    const pool=matchingPhrases(data,{category:cfg.category,...sel,...(tone?{tone,length}:{})});
+    assert(pool.length>=3,`insufficient pool: ${tab} ${JSON.stringify(sel)} ${tone} ${length}`);
+  }
+});
+const additions=data.filter(p=>p.id.startsWith('expanded_'));
+assert.equal(additions.length,1024);assert.equal(new Set(additions.map(p=>p.text)).size,368);
+assert(data.some(p=>p.id==='dinner_exec_formal_01'));
+const synthetic=[
+ {id:'a',category:'demo',text:'현재 상황은 확인 중입니다. 정리해서 전달하겠습니다.',tags:['상황설명']},
+ {id:'b',category:'demo',text:'현재 상황을 확인하고 있습니다. 정리 후 전달하겠습니다.',tags:['상황설명']},
+ {id:'c',category:'demo',text:'필요한 자료를 먼저 보내는 방식은 어떠신가요?',tags:['대안제안']},
+ {id:'d',category:'demo',text:'내일 오전 회의에서 담당자와 기한을 함께 정해요.',tags:['다음행동']},
+];
+for(let i=0;i<30;i++){const result=recommend(synthetic,{category:'demo'});assert.equal(new Set(result.flatMap(p=>p.tags)).size,3);}
+assert(recommend(synthetic,{category:'demo'},['a','b','c']).some(p=>p.id==='d'));
+console.log('PASS: all 462 pools have at least 3 answers; 1,024 additions / 368 distinct new texts; purpose diversity and unseen priority.');

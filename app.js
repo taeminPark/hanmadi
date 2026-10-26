@@ -15,6 +15,12 @@ const SITUATIONS = [
   { label: '도움받았을 때', icon: 'heart' },
   { label: '신규 직원 환영', icon: 'userPlus' },
   { label: '먼저 퇴근할 때', icon: 'moon' },
+  { label: '일정 지연 안내', icon: 'clock' },
+  { label: '의견이 다를 때', icon: 'chat' },
+  { label: '정중히 거절할 때', icon: 'door' },
+  { label: '피드백 요청', icon: 'question' },
+  { label: '회의를 시작할 때', icon: 'report' },
+  { label: '업무 인수인계', icon: 'clipboard' },
 ];
 const TARGETS = ['기관장/임원', '부서장', '선배', '동료', '후배'].map(label => ({ label }));
 const TONES = [
@@ -75,6 +81,7 @@ const FLOWS = {
       { key: 'situation', ask: '안녕하세요. 오늘은 어떤 자리인가요?', options: () => SITUATIONS },
       { key: 'target', ask: '누구에게 말하나요?', options: () => TARGETS },
     ],
+    tips: sel => [sel.situation],
     tones: true,   // 톤은 묻지 않고 결과 위 톤 바·좌우 스와이프로 바꾼다 (기본 정중)
     change: [['상대 바꾸기', 1]],
   },
@@ -187,10 +194,10 @@ function header(title, sub = '') {
   return h`<header class="head"><img class="logo" src="logo.svg" alt=""><div class="head-text"><div class="head-title">${title}</div><div class="head-sub">${sub}</div></div><button class="icon-btn" data-action="settings" aria-label="설정">${icon('sliders')}</button></header>`;
 }
 function search(value, label) { return h`<label class="search"><span class="sr">${label}</span><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="${label}" value="${value}" autocomplete="off"></label>`; }
-function matches(p, query) { return display([p.text,p.situation,p.target,p.style,p.tone].join(' ')).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()); }
+function matches(p, query) { return display([p.text,p.situation,p.target,p.style,p.tone,...(p.tags || [])].join(' ')).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()); }
 function card(p) {
   const fav = store.isFavorite(p.id);
-  return h`<article class="phrase-card" data-id="${p.id}"><div class="card-meta">${display([p.situation,p.target,p.style,p.tone].filter(Boolean).join(' · '))}</div><p class="pick-text">${display(p.text)}</p>${p.lead ? h`<div class="callout"><span class="call lead"><small>선창</small>${display(p.lead)}</span><span class="call resp"><small>후창</small>${display(p.response)}</span></div>` : ''}<div class="pick-actions"><button class="act-copy" data-action="copy" data-id="${p.id}">${icon('copy')}<span>복사</span></button><button class="act-fav ${fav ? 'on' : ''}" data-action="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="${fav ? '즐겨찾기 해제' : '즐겨찾기 저장'}">${fav ? '♥' : '♡'}</button></div></article>`;
+  return h`<article class="phrase-card" data-id="${p.id}"><div class="card-meta">${display([p.situation,p.target,p.style,p.tone,...(p.tags || []).filter(t => /^[가-힣]+$/.test(t))].filter(Boolean).join(' · '))}</div><p class="pick-text">${display(p.text)}</p>${p.lead ? h`<div class="callout"><span class="call lead"><small>선창</small>${display(p.lead)}</span><span class="call resp"><small>후창</small>${display(p.response)}</span></div>` : ''}<div class="pick-actions"><button class="act-copy" data-action="copy" data-id="${p.id}">${icon('copy')}<span>복사</span></button><button class="act-fav ${fav ? 'on' : ''}" data-action="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="${fav ? '즐겨찾기 해제' : '즐겨찾기 저장'}">${fav ? '♥' : '♡'}</button></div></article>`;
 }
 function filters(sel) {
   return h`<div class="result-filters"><fieldset><legend>말투</legend>${TONES.map(t => h`<button class="filter ${sel.tone === t.label ? 'on' : ''}" data-action="tone" data-value="${t.label}" aria-pressed="${sel.tone === t.label}">${t.label}</button>`)}</fieldset><fieldset><legend>길이</legend>${['전체','짧게'].map(t => h`<button class="filter ${sel.length === t ? 'on' : ''}" data-action="length" data-value="${t}" aria-pressed="${sel.length === t}">${t}</button>`)}</fieldset></div>`;
