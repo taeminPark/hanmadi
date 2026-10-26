@@ -1,19 +1,38 @@
 # 한마디
 
-상황과 상대만 고르면 바로 쓸 회사생활 멘트를 추천하는 모바일 PWA (바닐라 JS, 빌드 없음).
+상황과 상대만 고르면 바로 쓸 회사생활 멘트를 추천하는 모바일 PWA. 바닐라 JS로 구현했으며 빌드 과정이 없습니다.
 
 - 앱: https://taeminpark.github.io/hanmadi/
-- 탭: 상황별 · 경조사 · 건배사 · 위기 수습 · 스몰토크(준비 중) · 수집함
+- 메뉴: 상황별 · 경조사 · 건배사 · 위기 수습 · 수집함
+- 내장 멘트 2,312개. 검색, 최근 사용한 상황, 조건 바로 수정, 말투·길이 선택을 지원합니다.
+- 추천은 3개씩 교체하며 이전 추천은 최대 9묶음을 접어서 보관합니다.
+- 수집함에서 즐겨찾기와 최근 복사한 50개 멘트를 검색하거나 상황별로 분류할 수 있습니다. 즐겨찾기 해제는 6초 안에 되돌릴 수 있습니다.
+- 설정: 애니메이션, 기기/밝은/어두운 테마, 공공기관/일반 기업 호칭 표시.
 
 ## 실행
+
 ```bash
-python3 -m http.server 8765   # http://localhost:8765
+cd hanmadi
+python3 -m http.server 8765
 ```
 
+http://localhost:8765 에서 확인합니다. 서비스 워커는 HTTPS 배포에서 등록됩니다.
+
+## 검증
+
+```bash
+node tools/check.mjs
+node --input-type=module --check < app.js
+```
+
+추천 조합 342개, 말투·길이 필터, 소진 후 재추천, 기록 제한, 최근 상황 재사용, 상태 복원, 손상된 저장 값, 저장 공간 오류, 직장 호칭, 검색어 이스케이프를 검증합니다. 브라우저 레이아웃 및 실제 클립보드는 별도 실기기 확인이 필요합니다.
+
 ## 멘트 수정
-`tools/build_phrases.py`의 원본 데이터(DATA, EXTRA, EVENTS, CRISIS, TOASTS, TIPS)를 고친 뒤
-`python3 tools/build_phrases.py` → `data/phrases.json`, `data/tips.json` 재생성.
+
+`tools/build_phrases.py`의 원본 데이터(DATA, EXTRA, EVENTS, CRISIS, TOASTS, TIPS)를 고친 뒤 `python3 tools/build_phrases.py`를 실행해 `data/phrases.json`, `data/tips.json`을 재생성합니다.
+
+기존 데이터의 ‘짧게’ 멘트는 정중한 말투에 포함합니다. 길이 ‘짧게’는 선택한 말투 안에서 본문 60자 이하인 문장을 고릅니다. 조건에 맞는 새 멘트를 우선 추천하며, 소진해도 다른 말투를 섞지 않습니다. 기업 설정에서는 호칭 등 일부 표현을 표시·복사할 때 치환하며 원본 데이터는 유지합니다.
 
 ## 저장
-내장 멘트는 `data/phrases.json`(읽기 전용). 즐겨찾기·설정 등 내 기록은 localStorage(`hanmadi.*`).
-Gemini 키(2단계)도 앱 설정에서 입력해 기기에만 저장한다.
+
+내장 멘트는 읽기 전용입니다. 즐겨찾기·최근 상황·복사 기록·진행 상태·설정은 localStorage(`hanmadi.*`)에 저장됩니다. 기존 즐겨찾기를 유지합니다. 서버 전송이나 기기 간 동기화는 없으며 브라우저 데이터를 삭제하면 기록도 사라집니다.

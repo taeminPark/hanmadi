@@ -242,3 +242,74 @@ button:focus-visible, input:focus-visible { outline: 3px solid color-mix(in srgb
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* 검색부터 복사까지 짧고 명확한 동선 */
+:root { --ink-2:#705F50; --ink-3:#796858; --sans:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif; }
+:root[data-theme="dark"] { --ink-2:#C7B7A7; --ink-3:#BCAA98; --main:#805132; }
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink-2:#C7B7A7;--ink-3:#BCAA98;--main:#805132;}}
+button,input,select { -webkit-tap-highlight-color:transparent; }
+button:active { transform:scale(.98); }
+button:disabled { opacity:.55; cursor:default; }
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex="-1"]:focus-visible{outline:3px solid var(--accent);outline-offset:3px;}
+h1 { font-size:25px;line-height:1.35;letter-spacing:-.7px;margin:8px 0 24px;text-wrap:balance; }
+h2 { font-size:20px;line-height:1.4; }
+.head-title { letter-spacing:-.5px; }
+.head-sub { color:var(--ink-2); }
+.logo { width:46px;height:46px; }
+.content { padding:20px 18px 28px; }
+.eyebrow,.section-label { font-size:13px;font-weight:600;color:var(--ink-2); }
+.section-label { margin-top:20px; }
+.selection,.results { scroll-margin-top:100px; }
+.selection:focus,.results:focus,.sheet:focus { outline:none; }
+.search { display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--sheet);border-radius:16px;padding:0 14px;margin:16px 0; }
+.search>span:not(.sr) { font-size:26px;color:var(--ink-2); }
+.search input { min-width:0;width:100%;height:50px;background:transparent;border:0;color:var(--ink);font:inherit;font-size:15px; }
+.search input::placeholder { color:var(--ink-2);opacity:1; }
+.option-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px; }
+.option { display:flex;align-items:center;gap:10px;min-height:70px;text-align:left;padding:15px 12px;border-radius:18px;background:var(--sheet);border:1px solid var(--line);font-size:15px;font-weight:600;overflow-wrap:anywhere; }
+.option .i { color:var(--main); }
+.option small { display:block;font-size:12px;font-weight:400;color:var(--ink-2);margin-top:4px; }
+.option:active { background:var(--accent-soft); }
+.text-button { min-height:44px;padding:8px 4px;font-size:14px;font-weight:600;color:var(--accent-ink);text-decoration:underline;text-underline-offset:4px; }
+.selection>.text-button { display:block;margin:12px auto; }
+.conditions { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px; }
+.condition { display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:100px;padding:9px 13px;min-height:44px;background:var(--sheet);font-size:14px;font-weight:600; }
+.condition span { color:var(--ink-2); }
+.result-heading { display:flex;align-items:center;justify-content:space-between;gap:8px; }
+.result-heading h1 { font-size:23px;margin-bottom:16px; }
+.result-heading .text-button { flex:none; }
+.result-filters { display:flex;flex-wrap:wrap;gap:12px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line); }
+.result-filters fieldset { display:flex;align-items:center;gap:6px;padding:0;margin:0;border:0;min-width:0; }
+.result-filters legend { float:left;font-size:13px;color:var(--ink-2);margin-right:8px;line-height:44px; }
+.filter { height:44px;padding:0 14px; }
+.result-status { font-size:13px;color:var(--ink-2);margin:16px 0;min-height:20px; }
+.results { display:grid;gap:14px; }
+.phrase-card { min-width:0;background:var(--sheet);border:1px solid var(--line);border-radius:20px;padding:16px 17px 6px;box-shadow:var(--shadow);overflow-wrap:anywhere; }
+.card-meta { font-size:12px;color:var(--ink-2);margin-bottom:10px; }
+.pick-text { font-size:19px;line-height:1.75;user-select:text; }
+.pick-actions { border-top:1px solid var(--line);margin-top:14px; }
+.primary-button { display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;width:100%;border-radius:16px;background:var(--main);color:var(--on-main);font-size:16px;font-weight:600; }
+.primary-button .i .fill { fill:none; }
+.result-controls { padding:18px 0 6px; }
+.history { border-top:1px solid var(--line);margin-top:18px;padding-top:10px;font-size:14px; }
+.history summary { cursor:pointer;min-height:44px;align-content:center;font-weight:600;color:var(--ink-2); }
+.history .inbox { padding:12px 0; }
+.tips ul { padding-left:20px;display:grid;gap:10px;color:var(--ink-2); }
+.collection-tabs { display:flex;gap:8px; }
+.content .filters { padding:0 0 14px; }
+.content>.inbox { padding:0; }
+.empty { text-align:center;padding:32px 12px;color:var(--ink-2); }
+.empty h2 { color:var(--ink);font-size:19px; }
+.empty p,.storage-note { font-size:13px;line-height:1.6; }
+.storage-note { color:var(--ink-2);margin:24px 0 0; }
+.tabs { grid-template-columns:repeat(5,minmax(0,1fr));padding-top:8px; }
+.tab { min-height:54px;font-size:12px;gap:4px; }
+.tab.on { background:var(--accent-soft); }
+.sheet { max-height:85dvh;overflow-y:auto;overscroll-behavior:contain;padding-top:20px; }
+.sheet h2 { margin:0 0 18px; }
+.sheet .option { justify-content:center;text-align:center; }
+select { max-width:55%;min-height:44px;padding:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;font:inherit;font-size:14px; }
+#toast { top:auto;bottom:calc(env(safe-area-inset-bottom) + 92px);white-space:normal;width:max-content;max-width:calc(100vw - 32px);border-radius:16px;font-size:14px;box-shadow:var(--shadow); }
+#toast button { min-height:44px;font-weight:700;text-decoration:underline;text-underline-offset:4px;margin-left:8px; }
+@media(hover:hover) and (pointer:fine){.option:hover,.condition:hover,.chip:hover { border-color:var(--accent);background:var(--accent-soft); }.act-copy:hover,.act-fav:hover { background:var(--accent-soft); }}
+@media(max-width:350px){.content{padding:16px 12px}.option-grid{gap:8px}.option{font-size:14px;padding:12px 9px;gap:7px}.head-sub{font-size:12px}.result-heading h1{font-size:21px}.pick-text{font-size:18px}}

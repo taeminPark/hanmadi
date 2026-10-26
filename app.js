@@ -1,5 +1,5 @@
 import { store } from './store.js';
-import { recommend } from './recommend.js';
+import { recommend, matchingPhrases } from './recommend.js';
 
 // ---------- 데이터 ----------
 const SITUATIONS = [
@@ -20,7 +20,6 @@ const TARGETS = ['기관장/임원', '부서장', '선배', '동료', '후배'].
 const TONES = [
   { label: '정중', hint: '예의 바르고 무난하게' },
   { label: '유쾌', hint: '분위기를 살리는 한마디' },
-  { label: '짧게', hint: '한 문장으로 끝' },
 ];
 const EVENTS = [
   { label: '장례식', icon: 'flower' },
@@ -114,7 +113,6 @@ const TABS = [
   { id: 'event', label: '경조사', icon: 'envelope' },
   { id: 'toast', label: '건배사', icon: 'toast' },
   { id: 'crisis', label: '위기 수습', icon: 'ring' },
-  { id: 'smalltalk', label: '스몰토크', icon: 'cup', soon: '스몰토크는 그다음 단계에서 열려요. 오늘 꺼내기 좋은 화젯거리를 골라 드릴게요.' },
   { id: 'collect', label: '수집함', icon: 'bookmark' },
 ];
 
@@ -162,408 +160,148 @@ const ICONS = {
 };
 const icon = (name, cls = '') => raw(`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`);
 
-// ---------- 상태 ----------
-const state = {
-  tab: 'situation',
-  // 탭마다 고른 값과 추천 묶음([[id, id, id], ...] — '다른 멘트'를 누를 때마다 쌓인다)
-  // seen: 톤을 바꾸기 전에 본 멘트 (다시 돌아와도 새 멘트가 먼저 나오게)
-  flows: Object.fromEntries(['situation', 'event', 'toast', 'crisis'].map(id => [id, { sel: {}, rounds: [], seen: [] }])),
-  sheet: false,
-};
-let tips = {};
-let phrases = [];
-let byId = new Map();
-let seenCount = 0;   // 직전 렌더 때 대화에 있던 요소 수 → 새로 생긴 것만 애니메이션
-
-// ---------- html helpers ----------
-function raw(s) { return { __raw: String(s) }; }
-function fmt(v) {
-  if (v == null || v === false) return '';
-  if (Array.isArray(v)) return v.map(fmt).join('');
-  if (typeof v === 'object' && '__raw' in v) return v.__raw;
-  return esc(String(v));
-}
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML.replace(/"/g, '&quot;');
-}
-function h(strings, ...vals) {
-  return raw(strings.reduce((acc, s, i) => acc + s + (i < vals.length ? fmt(vals[i]) : ''), ''));
-}
-
-// ---------- motion ----------
-function motionOn() {
-  return store.settings().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-function applyMotionClass() {
-  document.documentElement.classList.toggle('no-motion', !motionOn());
-}
-
-// ---------- views ----------
-function header(title, sub) {
-  const favCount = store.favorites().length;
-  return h`
-  <header class="head">
-    <img class="logo" src="logo.svg" alt="">
-    <div class="head-text"><div class="head-title">${title}</div>${sub ? h`<div class="head-sub">${sub}</div>` : ''}</div>
-    <button class="fav-count" data-action="tab" data-tab="collect" aria-label="즐겨찾기 ${favCount}개"><span aria-hidden="true">♥</span> ${favCount}</button>
-    <button class="icon-btn" data-action="open-settings" aria-label="설정">${icon('sliders', 'plain')}</button>
-  </header>`;
-}
-
-function chip(label, action, extra = {}) {
-  const data = Object.entries(extra).map(([k, v]) => h` data-${raw(k)}="${v}"`);
-  return h`<button class="chip" data-action="${action}"${data}>${extra.icon ? icon(extra.icon) : ''}<span>${label}</span></button>`;
-}
-
-const restartChip = () => h`<button class="chip chip-ghost" data-action="change" data-step="0"><span>처음부터</span></button>`;
-
-const optionValue = o => o.value ?? o.label;
-function optionChip(o, step) {
-  if (o.hint) {
-    return h`<button class="chip chip-tone" data-action="choose" data-step="${step}" data-value="${optionValue(o)}"><span>${o.label}</span><small>${o.hint}</small></button>`;
-  }
-  return chip(o.label, 'choose', { step, value: optionValue(o), ...(o.icon ? { icon: o.icon } : {}) });
-}
-
-function pickBubble(p, sel) {
-  const fav = store.isFavorite(p.id);
-  return h`
-  <div class="b pick" data-id="${p.id}">
-    ${sel.tone && p.tone !== sel.tone ? h`<span class="tone-tag">${p.tone}</span>` : ''}
-    <p class="pick-text">${p.text}</p>
-    ${p.lead ? h`<div class="callout"><span class="call lead"><small>선창</small>${p.lead}</span><span class="call resp"><small>후창</small>${p.response}</span></div>` : ''}
-    <div class="pick-actions">
-      <button class="act-copy" data-action="copy" data-id="${p.id}">${icon('copy')}복사</button>
-      <button class="act-fav ${fav ? 'on' : ''}" data-action="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="즐겨찾기">${fav ? '♥' : '♡'}</button>
-    </div>
-  </div>`;
-}
-
-function toneBar(current) {
-  return h`
-  <div class="tone-bar">
-    <div class="tone-seg" role="group" aria-label="톤">
-      ${TONES.map(t => h`<button class="tone-opt ${t.label === current ? 'on' : ''}" data-action="tone" data-value="${t.label}" aria-pressed="${t.label === current}">${t.label}</button>`)}
-    </div>
-    <span class="tone-hint" aria-hidden="true">좌우로 밀어서 톤 바꾸기</span>
-  </div>`;
-}
-
-function tipBubble(keys) {
-  const list = keys.flatMap(k => tips[k] || []);
-  if (!list.length) return '';
-  return h`<div class="b app tip"><strong>알아 두면 좋아요</strong><ul>${list.map(t => h`<li>${t}</li>`)}</ul></div>`;
-}
-
-function poolSize(cfg, sel) {
-  const match = { category: cfg.category, ...sel };
-  delete match.tone;
-  return phrases.filter(p => Object.entries(match).every(([k, v]) => p[k] === v)).length;
-}
-
-function flowView(id) {
-  const cfg = FLOWS[id];
-  const { sel, rounds } = state.flows[id];
-  const msgs = [h`<div class="sys">오늘</div>`];
-  let chips = null;
-  for (const [i, step] of cfg.steps.entries()) {
-    msgs.push(h`<div class="b app">${step.ask}</div>`);
-    const options = step.options(sel);
-    if (sel[step.key] == null) {
-      chips = [...options.map(o => optionChip(o, i)), i ? restartChip() : ''];
-      break;
-    }
-    const picked = options.find(o => optionValue(o) === sel[step.key]);
-    msgs.push(h`<div class="b me">${picked ? picked.label : sel[step.key]}</div>`);
-  }
-  if (!chips) {
-    const envelope = sel.moment === 'envelope';
-    const results = [];
-    rounds.forEach((ids, r) => {
-      results.push(h`<div class="b app">${r ? '이건 어때요?' : envelope ? '봉투엔 이렇게 써요.' : '이렇게 말해 보세요.'}</div>`);
-      ids.forEach(pid => results.push(pickBubble(byId.get(pid), sel)));
-      if (r === 0 && cfg.tips) results.push(tipBubble(cfg.tips(sel)));
-    });
-    if (cfg.tones) msgs.push(toneBar(sel.tone));
-    msgs.push(h`<div class="results">${results}</div>`);
-    chips = [
-      poolSize(cfg, sel) > 3 ? chip('다른 멘트', 'reroll', { icon: 'reroll' }) : '',
-      ...cfg.change.map(([label, step]) => chip(label, 'change', { step })),
-      chip('처음부터', 'change', { step: 0 }),
-    ];
-  }
-  return h`
-  ${header(cfg.title, cfg.sub)}
-  <section class="thread" aria-live="polite">
-    ${msgs}
-    <div class="chips">${chips}</div>
-  </section>`;
-}
-
-function soonView(tab) {
-  return h`
-  ${header(tab.label)}
-  <section class="thread">
-    <div class="b app">${tab.soon}</div>
-    <div class="b app">지금은 상황별 멘트를 써 보세요.</div>
-    <div class="chips">${chip('상황별 멘트로 가기', 'tab', { tab: 'situation', icon: 'chat' })}</div>
-  </section>`;
-}
-
-function collectView() {
-  const favs = store.favorites().map(id => byId.get(id)).filter(Boolean);
-  return h`
-  ${header('수집함')}
-  <div class="filters">
-    <button class="filter on" aria-pressed="true">즐겨찾기 ${favs.length}</button>
-    <button class="filter" data-action="soon" data-msg="내가 모은 멘트는 다음 단계에서 열려요">내가 모은 멘트</button>
-    <button class="filter" data-action="soon" data-msg="상대 메모는 그다음 단계에서 열려요">상대 메모</button>
-  </div>
-  ${favs.length ? h`<section class="inbox">${favs.map(p => h`
-    <article class="row" data-id="${p.id}">
-      <p class="row-text">${p.text}</p>
-      ${p.lead ? h`<div class="callout"><span class="call lead"><small>선창</small>${p.lead}</span><span class="call resp"><small>후창</small>${p.response}</span></div>` : ''}
-      <div class="row-foot">
-        <span class="row-meta">${[p.situation, p.target, p.style, p.category === 'situation' && p.tone].filter(Boolean).join(' · ')}</span>
-        <button class="act-copy" data-action="copy" data-id="${p.id}">${icon('copy')}복사</button>
-        <button class="act-fav on" data-action="fav" data-id="${p.id}" aria-pressed="true" aria-label="즐겨찾기 해제">♥</button>
-      </div>
-    </article>`)}</section>`
-  : h`<section class="thread">
-      <div class="b app">마음에 드는 멘트에 ♡를 누르면 여기 모여요.</div>
-      <div class="chips">${chip('멘트 고르러 가기', 'tab', { tab: 'situation', icon: 'chat' })}</div>
-    </section>`}`;
-}
-
-function tabBar() {
-  return h`
-  <nav class="tabs" aria-label="카테고리">
-    ${TABS.map(t => h`
-      <button class="tab ${state.tab === t.id ? 'on' : ''}" data-action="tab" data-tab="${t.id}" ${state.tab === t.id ? raw('aria-current="page"') : ''}>
-        ${icon(t.icon)}<span>${t.label}</span>
-      </button>`)}
-  </nav>`;
-}
-
-function settingsSheet() {
-  const s = store.settings();
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return h`
-  <div class="scrim" data-action="close-settings"></div>
-  <div class="sheet" role="dialog" aria-modal="true" aria-label="설정">
-    <div class="grabber" aria-hidden="true"></div>
-    <h2 class="sheet-title">설정</h2>
-    <label class="set-row">
-      <span><span class="set-label">애니메이션</span>
-      ${reduced ? h`<span class="set-hint">기기의 '동작 줄이기'가 켜져 있어 꺼진 상태로 동작해요.</span>` : ''}</span>
-      <input type="checkbox" class="switch" data-action="toggle-anim" ${s.animations ? raw('checked') : ''}>
-    </label>
-    <button class="btn-secondary" data-action="close-settings">닫기</button>
-  </div>`;
-}
-
-// ---------- render ----------
+// ---------- 상태와 저장 ----------
+const state = { tab: 'situation', flows: {}, sheet: null, query: '', all: false, collection: 'favorites', category: '', edit: null };
+for (const id of Object.keys(FLOWS)) state.flows[id] = { sel: {}, rounds: [], seen: [] };
+let phrases = [], tips = {}, byId = new Map(), undoFavorites = null, returnFocus = null;
 const $app = document.getElementById('app');
-
-function render({ scroll = false } = {}) {
-  const tab = TABS.find(t => t.id === state.tab);
-  const body = FLOWS[tab.id] ? flowView(tab.id) : tab.id === 'collect' ? collectView() : soonView(tab);
-  $app.innerHTML = fmt(body) + fmt(tabBar()) + fmt(state.sheet ? settingsSheet() : '');
-  // 톤 바가 헤더 바로 아래에 붙도록 헤더 높이를 넘겨 준다
-  const head = $app.querySelector('.head');
-  if (head) document.documentElement.style.setProperty('--head-h', `${head.offsetHeight}px`);
-
-  // 새로 생긴 말풍선과 칩만 아래에서 튀어 오르게
-  const items = [...$app.querySelectorAll('.thread > .b, .thread > .sys, .results > .b, .chips > .chip')];
-  if (motionOn()) {
-    let n = 0;
-    items.forEach((el, i) => {
-      if (i >= seenCount) { el.style.setProperty('--i', n++); el.classList.add('enter'); }
-    });
+function raw(s) { return { __raw: String(s) }; }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmt(v) { return v == null || v === false ? '' : Array.isArray(v) ? v.map(fmt).join('') : v?.__raw ?? esc(v); }
+function h(strings, ...vals) { return raw(strings.reduce((a, s, i) => a + s + (i < vals.length ? fmt(vals[i]) : ''), '')); }
+function motionOn() { return store.settings().animations && !matchMedia('(prefers-reduced-motion: reduce)').matches; }
+function applySettings() {
+  document.documentElement.classList.toggle('no-motion', !motionOn());
+  document.documentElement.dataset.theme = store.settings().theme || 'system';
+}
+function persist() { store.write('session', { tab: state.tab, flows: state.flows }); }
+function recentSituations() { return store.list('recentSituations').filter(r => r && FLOWS[r.tab] && r.sel && typeof r.sel === 'object' && FLOWS[r.tab].steps.every(s => s.options(r.sel).some(o => (o.value ?? o.label) === r.sel[s.key]))); }
+function display(text) {
+  if (store.settings().workplace !== 'company') return text;
+  return text.replace(/기관장\/임원/g, '대표/임원').replace(/기관장/g, '대표').replace(/부서장/g, '팀장').replace(/감사·국감/g, '감사·평가').replace(/국감/g, '대외 평가');
+}
+function button(label, action, attrs = {}, cls = 'chip') {
+  return h`<button class="${cls}" data-action="${action}"${Object.entries(attrs).map(([k,v]) => h` data-${raw(k)}="${v}"`)}>${label}</button>`;
+}
+function header(title, sub = '') {
+  return h`<header class="head"><img class="logo" src="logo.svg" alt=""><div class="head-text"><div class="head-title">${title}</div><div class="head-sub">${sub}</div></div><button class="icon-btn" data-action="settings" aria-label="설정">${icon('sliders')}</button></header>`;
+}
+function search(value, label) { return h`<label class="search"><span class="sr">${label}</span><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="${label}" value="${value}" autocomplete="off"></label>`; }
+function matches(p, query) { return display([p.text,p.situation,p.target,p.style,p.tone].join(' ')).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()); }
+function card(p) {
+  const fav = store.isFavorite(p.id);
+  return h`<article class="phrase-card" data-id="${p.id}"><div class="card-meta">${display([p.situation,p.target,p.style,p.tone].filter(Boolean).join(' · '))}</div><p class="pick-text">${display(p.text)}</p>${p.lead ? h`<div class="callout"><span class="call lead"><small>선창</small>${display(p.lead)}</span><span class="call resp"><small>후창</small>${display(p.response)}</span></div>` : ''}<div class="pick-actions"><button class="act-copy" data-action="copy" data-id="${p.id}">${icon('copy')}<span>복사</span></button><button class="act-fav ${fav ? 'on' : ''}" data-action="fav" data-id="${p.id}" aria-pressed="${fav}" aria-label="${fav ? '즐겨찾기 해제' : '즐겨찾기 저장'}">${fav ? '♥' : '♡'}</button></div></article>`;
+}
+function filters(sel) {
+  return h`<div class="result-filters"><fieldset><legend>말투</legend>${TONES.map(t => h`<button class="filter ${sel.tone === t.label ? 'on' : ''}" data-action="tone" data-value="${t.label}" aria-pressed="${sel.tone === t.label}">${t.label}</button>`)}</fieldset><fieldset><legend>길이</legend>${['전체','짧게'].map(t => h`<button class="filter ${sel.length === t ? 'on' : ''}" data-action="length" data-value="${t}" aria-pressed="${sel.length === t}">${t}</button>`)}</fieldset></div>`;
+}
+function optionsView(cfg, f, step) {
+  let opts = cfg.steps[step].options(f.sel);
+  const initial = step === 0;
+  const query = state.query.trim();
+  if (initial && query) opts = opts.filter(o => display(o.label).includes(query));
+  const visible = initial && !state.all && !query ? opts.slice(0,6) : opts;
+  const recent = initial ? recentSituations().filter(r => r.tab === state.tab).slice(0,3) : [];
+  return h`<section class="selection" tabindex="-1"><div class="eyebrow">${step + 1} / ${cfg.steps.length} 단계</div><h1>${cfg.steps[step].ask}</h1>${initial ? search(state.query,'상황 검색 · 회식, 감사, 퇴근') : ''}${recent.length && !query ? h`<div class="section-label">최근 사용</div><div class="chips">${recent.map(r => button(display(r.sel.situation), 'resume', {index: recentSituations().findIndex(x => x.tab === r.tab && JSON.stringify(x.sel) === JSON.stringify(r.sel))}))}</div>` : ''}<div class="option-grid">${visible.map(o => h`<button class="option" data-action="choose" data-step="${step}" data-value="${o.value ?? o.label}">${o.icon ? icon(o.icon) : ''}<span>${display(o.label)}${o.hint ? h`<small>${display(o.hint)}</small>` : ''}</span></button>`)}</div>${!visible.length ? h`<p class="empty">맞는 상황이 없어요. 다른 단어로 검색해 주세요.</p>` : ''}${initial && opts.length > 6 && !query ? button(state.all ? '자주 쓰는 상황만 보기' : `전체 상황 보기 (${opts.length})`, 'all', {}, 'text-button') : ''}${step ? button('이전 단계', 'back', {step: step-1}, 'text-button') : ''}</section>`;
+}
+function flowView(id) {
+  const cfg = FLOWS[id], f = state.flows[id];
+  const step = cfg.steps.findIndex(s => f.sel[s.key] == null);
+  const summary = cfg.steps.filter(s => f.sel[s.key] != null).map((s,i) => {
+    const option = s.options(f.sel).find(o => (o.value ?? o.label) === f.sel[s.key]);
+    return h`<button class="condition" data-action="edit" data-step="${i}" aria-label="${display(option?.label || f.sel[s.key])} 변경">${display(option?.label || f.sel[s.key])}<span aria-hidden="true">⌄</span></button>`;
+  });
+  return h`${header(cfg.title,display(cfg.sub))}<div class="content">${summary.length ? h`<div class="conditions" aria-label="선택한 조건">${summary}</div>` : ''}${step >= 0 ? optionsView(cfg,f,step) : h`<section class="recommendations"><div class="result-heading"><div><div class="eyebrow">지금 필요한 한마디</div><h1>이렇게 말해 보세요</h1></div>${button('새로 고르기','restart',{},'text-button')}</div>${cfg.tones ? filters(f.sel) : ''}<div class="result-status" role="status">${f.repeated ? '선택한 조건의 멘트를 모두 봤어요. 이전 멘트를 다시 추천해요.' : '마음에 드는 문장을 복사하거나 저장하세요.'}</div><div class="results" tabindex="-1" aria-label="추천 멘트">${(f.rounds.at(-1) || []).map(id => byId.get(id)).filter(Boolean).map(card)}${!f.rounds.at(-1)?.length ? h`<p class="empty">이 조건에 맞는 멘트가 없어요. 길이를 ‘전체’로 바꿔 보세요.</p>` : ''}</div><div class="result-controls">${button(h`${icon('reroll')}다른 멘트 보기`,'reroll',{},'primary-button')}</div>${f.rounds.length > 1 ? h`<details class="history"><summary>이전 추천 보기 (${f.rounds.length-1}묶음)</summary><div class="inbox">${[...f.rounds.slice(0,-1)].reverse().map(ids => ids.map(id=>byId.get(id)).filter(Boolean).map(card))}</div></details>` : ''}${cfg.tips ? h`<details class="history tips"><summary>알아 두면 좋은 에티켓</summary><ul>${cfg.tips(f.sel).flatMap(k=>tips[k]||[]).map(t=>h`<li>${t}</li>`)}</ul></details>` : ''}</section>`}</div>`;
+}
+function collectionView() {
+  const ids = store.list(state.collection === 'favorites' ? 'favorites' : 'copies');
+  const list = ids.map(id=>byId.get(id)).filter(Boolean).filter(p=>(!state.category || p.category===state.category)&&matches(p,state.query));
+  return h`${header('수집함','다시 꺼내 쓰기 좋은 말들')}<div class="content"><div class="collection-tabs">${[['favorites','즐겨찾기'],['copies','최근 복사']].map(([value,label])=>h`<button class="filter ${state.collection===value?'on':''}" data-action="collection" data-value="${value}" aria-pressed="${state.collection===value}">${label} ${store.list(value).length}</button>`)}</div>${search(state.query,'저장한 멘트 검색')}<div class="filters">${[['','전체'],...TABS.filter(t=>FLOWS[t.id]).map(t=>[t.id,t.label])].map(([value,label])=>h`<button class="filter ${state.category===value?'on':''}" data-action="category" data-value="${value}" aria-pressed="${state.category===value}">${label}</button>`)}</div><div class="inbox" id="collection-results">${list.length ? list.map(card) : h`<div class="empty"><h2>${ids.length ? '검색 결과가 없어요' : state.collection === 'copies' ? '복사한 멘트가 여기 모여요' : '다시 쓰고 싶은 말을 모아 보세요'}</h2><p>${ids.length ? '검색어나 분류를 바꿔 보세요.' : '멘트의 복사 버튼이나 하트를 눌러 보세요.'}</p>${button('멘트 찾으러 가기','tab',{tab:'situation'})}</div>`}</div><p class="storage-note">기록은 이 브라우저에 저장돼요. 브라우저 데이터를 삭제하면 사라질 수 있어요.</p></div>`;
+}
+function sheetView() {
+  if (state.sheet === 'edit') {
+    const cfg=FLOWS[state.tab], f=state.flows[state.tab], step=state.edit;
+    return h`<h2 id="sheet-title">${cfg.steps[step].ask}</h2><div class="option-grid">${cfg.steps[step].options(f.sel).map(o=>button(display(o.label),'replace',{step,value:o.value??o.label},'option'))}</div>`;
   }
-  seenCount = items.length;
-  if (scroll) {
-    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: motionOn() ? 'smooth' : 'auto' });
-  }
+  const s=store.settings();
+  return h`<h2 id="sheet-title">설정</h2><label class="set-row"><span class="set-label">화면 효과</span><input type="checkbox" class="switch" data-setting="animations" ${s.animations ? raw('checked') : ''}></label><p class="set-hint">기기의 ‘동작 줄이기’ 설정을 우선 적용해요.</p><label class="set-row"><span class="set-label">화면 테마</span><select data-setting="theme">${[['system','기기 설정'],['light','밝게'],['dark','어둡게']].map(([v,l])=>h`<option value="${v}" ${s.theme===v?raw('selected'):''}>${l}</option>`)}</select></label><label class="set-row"><span class="set-label">직장 표현</span><select data-setting="workplace">${[['public','공공기관'],['company','일반 기업']].map(([v,l])=>h`<option value="${v}" ${s.workplace===v?raw('selected'):''}>${l}</option>`)}</select></label><p class="set-hint">기관장·부서장 등의 호칭을 선택한 직장에 맞춰 표시하고 복사해요.</p>`;
 }
-
-function switchTab(id) {
-  if (id === state.tab) return;
-  const update = () => { state.tab = id; seenCount = 0; render(); window.scrollTo(0, 0); };
-  if (!document.startViewTransition || !motionOn()) return update();
-  document.startViewTransition(update);
+function render({ focus = false } = {}) {
+  const active=document.activeElement, searchFocused=active?.id==='search', cursor=active?.selectionStart;
+  const focusKey=active?.dataset.action ? {action:active.dataset.action,id:active.dataset.id,value:active.dataset.value,step:active.dataset.step,tab:active.dataset.tab} : null;
+  $app.innerHTML=fmt(state.tab==='collect'?collectionView():flowView(state.tab))+fmt(h`<nav class="tabs" aria-label="카테고리">${TABS.map(t=>h`<button class="tab ${state.tab===t.id?'on':''}" data-action="tab" data-tab="${t.id}" ${state.tab===t.id?raw('aria-current="page"'):''}>${icon(t.icon)}<span>${t.label}</span></button>`)}</nav>`)+fmt(state.sheet?h`<div class="scrim" data-action="close"></div><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" tabindex="-1">${sheetView()}${button('닫기','close',{},'btn-secondary')}</section>`:'');
+  $app.querySelector('.content')?.toggleAttribute('inert',!!state.sheet);
+  $app.querySelector('.head')?.toggleAttribute('inert',!!state.sheet);
+  $app.querySelector('.tabs')?.toggleAttribute('inert',!!state.sheet);
+  persist();
+  if(searchFocused && !state.sheet) { const input=$app.querySelector('#search'); input?.focus({preventScroll:true}); try { input?.setSelectionRange(cursor,cursor); } catch {} }
+  else if(state.sheet) $app.querySelector('.sheet')?.focus({preventScroll:true});
+  else if(focus) { const el=$app.querySelector('.results, .selection'); el?.focus({preventScroll:true}); el?.scrollIntoView({block:'start',behavior:motionOn()?'smooth':'auto'}); }
+  else if(focusKey) [...$app.querySelectorAll('[data-action]')].find(e=>Object.entries(focusKey).every(([k,v])=>e.dataset[k]===v))?.focus({preventScroll:true});
 }
-
-// ---------- actions ----------
-function newRound() {
-  const cfg = FLOWS[state.tab];
-  const f = state.flows[state.tab];
-  const recent = [...f.seen, ...f.rounds.flat()];  // 이번 대화에서 본 멘트는 모두 뒤로
-  f.rounds.push(recommend(phrases, { category: cfg.category, ...f.sel }, recent).map(p => p.id));
+function closeSheet() { state.sheet=null; render(); const target=returnFocus; if(target) [...$app.querySelectorAll('[data-action]')].find(e=>e.dataset.action===target.action&&e.dataset.step===target.step)?.focus({preventScroll:true}); }
+function openSheet(type,el) { returnFocus={action:el.dataset.action,step:el.dataset.step};state.sheet=type;render(); }
+function newRound(reset=false) {
+  const f=state.flows[state.tab],cfg=FLOWS[state.tab];
+  if(reset){f.rounds=[];f.seen=[];}
+  const pool=matchingPhrases(phrases,{category:cfg.category,...f.sel});
+  const seen=new Set(f.seen);
+  f.repeated=pool.length>0&&pool.every(p=>seen.has(p.id));
+  const ids=recommend(phrases,{category:cfg.category,...f.sel},f.seen).map(p=>p.id);
+  f.rounds.push(ids);f.rounds=f.rounds.slice(-10);f.seen=[...new Set([...f.seen,...ids])];
+  const recent=recentSituations().filter(r=>r.tab!==state.tab||JSON.stringify(r.sel)!==JSON.stringify(f.sel));
+  store.write('recentSituations',[{tab:state.tab,sel:{...f.sel}},...recent].slice(0,12));
 }
-
-// dir: 새 카드가 들어오는 방향 (1 = 오른쪽에서, -1 = 왼쪽에서)
-function setTone(tone, dir) {
-  const f = state.flows[state.tab];
-  if (!tone || tone === f.sel.tone) return;
-  f.seen.push(...f.rounds.flat());
-  f.sel.tone = tone;
-  f.rounds = [];
-  newRound();
-  seenCount = Infinity;
-  render();
-  if (motionOn()) $app.querySelector('.results')?.classList.add(dir < 0 ? 'slide-from-left' : 'slide-from-right');
-  document.getElementById('sr-live').textContent = `${tone} 톤으로 바꿨어요`;
-}
-
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', '');
-    ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-  }
-}
-
-function stamp(target) {
-  target.querySelector('.stamp')?.remove();
-  const s = document.createElement('span');
-  s.className = 'stamp';
-  s.setAttribute('aria-hidden', 'true');
-  s.textContent = '복사됨';
-  target.appendChild(s);
-  s.addEventListener('animationend', e => { if (e.animationName === 'stamp-out') s.remove(); });
-  if (!motionOn()) setTimeout(() => s.remove(), 1200);
-}
-
 let toastTimer;
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+function toast(message,undo=false) {
+  const el=document.getElementById('toast');el.innerHTML=esc(message)+(undo?' <button type="button" id="undo">되돌리기</button>':'');el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.classList.remove('show');undoFavorites=null;},6000);
 }
-
-const actions = {
-  choose: el => {
-    const cfg = FLOWS[state.tab];
-    const f = state.flows[state.tab];
-    const step = Number(el.dataset.step);
-    f.sel[cfg.steps[step].key] = el.dataset.value;
-    if (step === cfg.steps.length - 1) {
-      if (cfg.tones && !f.sel.tone) f.sel.tone = TONES[0].label;
-      newRound();
-    }
-    render({ scroll: true });
-  },
-  reroll: () => { newRound(); render({ scroll: true }); },
-  tone: el => {
-    const idx = t => TONES.findIndex(x => x.label === t);
-    setTone(el.dataset.value, idx(el.dataset.value) < idx(state.flows[state.tab].sel.tone) ? -1 : 1);
-  },
-  // step 단계부터 다시 고르기 (0이면 처음부터)
-  change: el => {
-    const cfg = FLOWS[state.tab];
-    const f = state.flows[state.tab];
-    const step = Number(el.dataset.step);
-    cfg.steps.slice(step).forEach(s => delete f.sel[s.key]);
-    f.rounds = [];
-    f.seen = [];
-    seenCount = 2 + step * 2;   // '오늘' + 앞 단계 질문·답은 그대로, 새 질문 아래부터 애니메이션
-    render({ scroll: step > 0 });
-    if (!step) window.scrollTo({ top: 0, behavior: motionOn() ? 'smooth' : 'auto' });
-  },
-  tab: el => switchTab(el.dataset.tab),
-  soon: el => toast(el.dataset.msg),
-  copy: async el => {
-    const p = byId.get(el.dataset.id);
-    await copyText(p.lead ? `${p.text}\n선창: ${p.lead}\n후창: ${p.response}` : p.text);
-    stamp(el.closest('.pick, .row'));
-    document.getElementById('sr-live').textContent = '복사했어요';
-  },
-  fav: el => {
-    const on = store.toggleFavorite(el.dataset.id);
-    if (state.tab === 'collect') { seenCount = Infinity; return render(); }
-    el.classList.toggle('on', on);
-    el.textContent = on ? '♥' : '♡';
-    el.setAttribute('aria-pressed', on);
-    if (on && motionOn()) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
-    const count = $app.querySelector('.fav-count');
-    const n = store.favorites().length;
-    count.innerHTML = `<span aria-hidden="true">♥</span> ${n}`;
-    count.setAttribute('aria-label', `즐겨찾기 ${n}개`);
-  },
-  'open-settings': () => { state.sheet = true; seenCount = Infinity; render(); },
-  'close-settings': () => { state.sheet = false; seenCount = Infinity; render(); },
-  'toggle-anim': el => {
-    store.saveSettings({ ...store.settings(), animations: el.checked });
-    applyMotionClass();
-  },
+async function copyText(text) {
+  try { if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return;} } catch {}
+  const active=document.activeElement,ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.append(ta);ta.select();
+  let ok=false;try{ok=document.execCommand('copy');}finally{ta.remove();active?.focus({preventScroll:true});}if(!ok)throw new Error('copy failed');
+}
+const actions={
+  tab(el){state.tab=el.dataset.tab;state.query='';state.all=false;state.category='';render();window.scrollTo(0,0);},
+  choose(el){const cfg=FLOWS[state.tab],f=state.flows[state.tab];f.sel[cfg.steps[Number(el.dataset.step)].key]=el.dataset.value;state.query='';if(cfg.steps.every(s=>f.sel[s.key]!=null)){if(cfg.tones){f.sel.tone ||= '정중';f.sel.length ||= '전체';}newRound(true);}render({focus:true});},
+  all(){state.all=!state.all;render();},
+  restart(){state.flows[state.tab]={sel:{},rounds:[],seen:[]};state.query='';render({focus:true});},
+  back(el){const cfg=FLOWS[state.tab],f=state.flows[state.tab];cfg.steps.slice(Number(el.dataset.step)).forEach(s=>delete f.sel[s.key]);f.rounds=[];render({focus:true});},
+  edit(el){state.edit=Number(el.dataset.step);openSheet('edit',el);},
+  replace(el){const cfg=FLOWS[state.tab],f=state.flows[state.tab],i=Number(el.dataset.step);f.sel[cfg.steps[i].key]=el.dataset.value;for(const step of cfg.steps){if(f.sel[step.key]!=null&&!step.options(f.sel).some(o=>(o.value??o.label)===f.sel[step.key]))delete f.sel[step.key];}state.sheet=null;if(cfg.steps.every(s=>f.sel[s.key]!=null))newRound(true);render({focus:true});},
+  reroll(){newRound();render({focus:true});},
+  tone(el){state.flows[state.tab].sel.tone=el.dataset.value;newRound(true);render();},
+  length(el){state.flows[state.tab].sel.length=el.dataset.value;newRound(true);render();},
+  resume(el){const r=recentSituations()[Number(el.dataset.index)];if(!r)return;state.tab=r.tab;state.flows[r.tab]={sel:{...r.sel},rounds:[],seen:[]};newRound();render({focus:true});},
+  collection(el){state.collection=el.dataset.value;state.query='';render();},
+  category(el){state.category=el.dataset.value;render();},
+  settings(el){openSheet('settings',el);},close:closeSheet,
+  fav(el){const previous=store.favorites();try{const on=store.toggleFavorite(el.dataset.id);if(!on){undoFavorites=previous;toast('즐겨찾기를 해제했어요',true);}else toast('즐겨찾기에 저장했어요');render();}catch{toast('저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.');}},
+  async copy(el){const p=byId.get(el.dataset.id);if(!p)return;try{await copyText(display(p.lead?`${p.text}\n선창: ${p.lead}\n후창: ${p.response}`:p.text));el.querySelector('span').textContent='복사 완료';setTimeout(()=>{if(el.isConnected)el.querySelector('span').textContent='복사';},1800);const ids=store.list('copies');const saved=store.write('copies',[p.id,...ids.filter(id=>id!==p.id)].slice(0,50));toast(saved?'복사했어요':'복사했어요. 최근 기록은 저장하지 못했어요.');}catch{toast('복사하지 못했어요. 문장을 길게 눌러 직접 복사해 주세요.');}},
 };
-
-$app.addEventListener('click', e => {
-  const el = e.target.closest('[data-action]');
-  if (!el || el.disabled) return;
-  if (el.matches('input')) return; // 체크박스는 change로 처리
-  actions[el.dataset.action]?.(el);
-});
-$app.addEventListener('change', e => {
-  const el = e.target.closest('input[data-action]');
-  if (el) actions[el.dataset.action]?.(el);
-});
-// 결과 영역을 좌우로 밀면 톤 바꾸기 (왼쪽으로 밀면 다음 톤)
-let swipe = null;
-$app.addEventListener('touchstart', e => {
-  const res = e.target.closest('.results');
-  if (!res || !FLOWS[state.tab]?.tones || e.touches.length > 1) return;
-  swipe = { x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, horiz: null, res };
-}, { passive: true });
-$app.addEventListener('touchmove', e => {
-  if (!swipe) return;
-  const dx = e.touches[0].clientX - swipe.x, dy = e.touches[0].clientY - swipe.y;
-  if (swipe.horiz == null && Math.hypot(dx, dy) > 10) swipe.horiz = Math.abs(dx) > Math.abs(dy) * 1.3;
-  if (!swipe.horiz) return;
-  swipe.dx = dx;
-  if (motionOn()) {
-    swipe.res.classList.add('dragging');
-    swipe.res.style.transform = `translateX(${dx * .5}px)`;
-    swipe.res.style.opacity = 1 - Math.min(Math.abs(dx) / 500, .4);
+$app.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(el&&!el.disabled)actions[el.dataset.action]?.(el);});
+$app.addEventListener('input',e=>{if(e.target.id==='search'){state.query=e.target.value;render();}});
+$app.addEventListener('change',e=>{const key=e.target.dataset.setting;if(!key)return;const saved=store.saveSettings({...store.settings(),[key]:e.target.type==='checkbox'?e.target.checked:e.target.value});if(!saved)toast('설정을 저장하지 못했어요.');applySettings();render();$app.querySelector(`[data-setting="${key}"]`)?.focus();});
+document.getElementById('toast').addEventListener('click',e=>{if(e.target.id==='undo'&&undoFavorites){try{store.writeOrThrow('favorites',undoFavorites);undoFavorites=null;toast('즐겨찾기를 복원했어요');render();}catch{toast('저장하지 못했어요.');}}});
+document.addEventListener('keydown',e=>{if(!state.sheet)return;if(e.key==='Escape'){e.preventDefault();closeSheet();}if(e.key==='Tab'){const list=[...$app.querySelectorAll('.sheet button,.sheet input,.sheet select')],first=list[0],last=list.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement.matches('.sheet'))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(document.activeElement===last||document.activeElement.matches('.sheet'))){e.preventDefault();first?.focus();}}});
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',applySettings);
+function restore() {
+  const saved=store.read('session',null);if(!saved)return;
+  if(TABS.some(t=>t.id===saved.tab))state.tab=saved.tab;
+  for(const [id,cfg] of Object.entries(FLOWS)){
+    const f=saved.flows?.[id];if(!f?.sel||typeof f.sel!=='object')continue;
+    const sel={};for(const step of cfg.steps){if(!step.options(sel).some(o=>(o.value??o.label)===f.sel[step.key]))break;sel[step.key]=f.sel[step.key];}
+    if(cfg.tones){sel.tone=TONES.some(t=>t.label===f.sel.tone)?f.sel.tone:'정중';sel.length=f.sel.length==='짧게'?'짧게':'전체';}
+    const complete=cfg.steps.every(s=>sel[s.key]!=null);
+    const valid=new Set(matchingPhrases(phrases,{category:cfg.category,...sel}).map(p=>p.id));
+    const rounds=complete&&Array.isArray(f.rounds)?f.rounds.filter(Array.isArray).map(ids=>ids.filter(id=>valid.has(id))).filter(ids=>ids.length).slice(-10):[];
+    state.flows[id]={sel,rounds,seen:Array.isArray(f.seen)?f.seen.filter(id=>byId.has(id)):[]};
+    if(complete&&!rounds.length){const old=state.tab;state.tab=id;newRound();state.tab=old;}
   }
-}, { passive: true });
-function endSwipe() {
-  if (!swipe) return;
-  const { dx, horiz, res } = swipe;
-  swipe = null;
-  res.classList.remove('dragging');
-  res.style.transform = ''; res.style.opacity = '';
-  if (!horiz || Math.abs(dx) < 60) return;
-  const i = TONES.findIndex(t => t.label === state.flows[state.tab].sel.tone);
-  const dir = dx < 0 ? 1 : -1;
-  setTone(TONES[(i + dir + TONES.length) % TONES.length].label, dir);
 }
-$app.addEventListener('touchend', endSwipe);
-$app.addEventListener('touchcancel', endSwipe);
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && state.sheet) actions['close-settings']();
-});
-matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', applyMotionClass);
-
-// ---------- boot ----------
-applyMotionClass();
-Promise.all([fetch('data/phrases.json').then(r => r.json()), fetch('data/tips.json').then(r => r.json())])
-  .then(([data, tipData]) => { phrases = data; byId = new Map(data.map(p => [p.id, p])); tips = tipData; render(); })
-  .catch(() => { $app.innerHTML = '<p class="load-error">멘트를 불러오지 못했어요. 새로고침해 주세요.</p>'; });
-
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js');
+async function boot(){
+  applySettings();$app.innerHTML='<p class="load-error" role="status">한마디를 준비하고 있어요…</p>';
+  try{const data=await Promise.all(['data/phrases.json','data/tips.json'].map(async url=>{const r=await fetch(url);if(!r.ok)throw new Error('load');return r.json();}));phrases=data[0];tips=data[1];byId=new Map(phrases.map(p=>[p.id,p]));restore();render();}catch{$app.innerHTML='<div class="load-error"><p>멘트를 불러오지 못했어요.</p><button class="chip" id="retry">다시 시도</button></div>';document.getElementById('retry').onclick=boot;}
 }
+boot();
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});

@@ -1,20 +1,15 @@
-// 조건(category, situation, target, moment …)이 모두 맞는 멘트 중 고른 톤을 우선, 방금 본 멘트는 뒤로.
-// 2단계에서 반응(🔥/🥶) 가중치를 여기에 더한다.
-function shuffle(list) {
-  const a = [...list];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+// 말투는 고정하고, 짧은 문장은 해당 말투 안에서만 고른다.
+export function matchingPhrases(phrases, { tone, length, ...match }) {
+  const pool = phrases.filter(p => Object.entries(match).every(([k,v]) => p[k] === v));
+  const toned = tone ? pool.filter(p => tone === '정중' ? ['정중','짧게'].includes(p.tone) : p.tone === tone) : pool;
+  return length === '짧게' ? toned.filter(p => p.text.length <= 60 && !p.lead) : toned;
 }
-
-export function recommend(phrases, { tone, ...match }, recent = [], count = 3) {
-  const pool = phrases.filter(p => Object.entries(match).every(([k, v]) => p[k] === v));
-  const fresh = pool.filter(p => !recent.includes(p.id));
-  const seen = pool.filter(p => recent.includes(p.id));
-  const byTone = list => tone
-    ? [...shuffle(list.filter(p => p.tone === tone)), ...shuffle(list.filter(p => p.tone !== tone))]
-    : shuffle(list);
-  return [...byTone(fresh), ...byTone(seen)].slice(0, count);
+function shuffle(list) {
+  const result = [...list];
+  for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
+  return result;
+}
+export function recommend(phrases, match, recent=[], count=3) {
+  const pool=matchingPhrases(phrases,match), seen=new Set(recent);
+  return [...shuffle(pool.filter(p=>!seen.has(p.id))),...shuffle(pool.filter(p=>seen.has(p.id)))].slice(0,count);
 }
